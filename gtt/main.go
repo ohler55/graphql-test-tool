@@ -75,8 +75,3 @@ usage: %s [<options>] <json-file>...
 		os.Exit(1)
 	}
 }
-
-// TBD
-// README
-// usecase file description (format.md)
-// doc.go - same as format.md
