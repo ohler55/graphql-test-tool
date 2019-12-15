@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#375EAB">
+
+  <title>gtt - Go Documentation Server</title>
+
+<link type="text/css" rel="stylesheet" href="style.css">b
+
+<script>window.initFuncs = [];</script>
+<script src="jquery.js" defer></script>
+
+
+
+<script>var goVersion = "go1.13.5";</script>
+<script src="godocs.js" defer></script>
+</head>
+<body>
+
+<div id='lowframe' style="position: fixed; bottom: 0; left: 0; height: 0; width: 100%; border-top: thin solid grey; background-color: white; overflow: auto;">
+...
+</div><!-- #lowframe -->
+
+<div id="topbar" class="wide"><div class="container">
+<div class="top-heading" id="heading-wide"><a href="/pkg/">Go Documentation Server</a></div>
+<div class="top-heading" id="heading-narrow"><a href="/pkg/">GoDoc</a></div>
+<a href="#" id="menu-button"><span id="menu-button-arrow">&#9661;</span></a>
+<form method="GET" action="/search">
+<div id="menu">
+
+<span class="search-box"><input type="search" id="search" name="q" placeholder="Search" aria-label="Search" required><button type="submit"><span><!-- magnifying glass: --><svg width="24" height="24" viewBox="0 0 24 24"><title>submit search</title><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/><path d="M0 0h24v24H0z" fill="none"/></svg></span></button></span>
+</div>
+</form>
+
+</div></div>
+
+
+
+<div id="page" class="wide">
+<div class="container">
+
+
+  <h1>
+    Package gtt
+    <span class="text-muted"></span>
+  </h1>
+
+
+
+
+
+
+
+<div id="nav"></div>
+
+
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script>
+	document.ANALYSIS_DATA = null;
+	document.CALLGRAPH = null;
+	</script>
+
+
+
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "github.com/ohler55/graphql-test-tool/gtt"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="#pkg-index" class="indexLink">Index</a></dd>
+
+
+				<dd><a href="#pkg-subdirectories">Subdirectories</a></dd>
+
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				<p>
+Package gtt is a GraphQL Test Tool for running tests cases against a GraphQL
+server. All tests are driven by use case JSON files. The format is described
+in [file_format.md](file_format.md). Some example files are in the `examples`
+directory and a simple test server can be set up using the files in the `test`
+directory.
+</p>
+<p>
+Each use case file should contain only on JSON object. That object can have a
+&#34;comment&#34; and a &#34;steps&#34; element.
+</p>
+<pre>- comment is an optional description of the use case.
+- steps is an array of steps that define the use case.
+</pre>
+<p>
+Note: String fields such as comments and content can also be an array of strings. The array of strings is joined with newlines to for a string. The intent is to make it easier to enter multi-line comments more easily.
+</p>
+<p>
+An example is:
+</p>
+<pre>{
+  &#34;comment&#34;: [
+    &#34;This example demonstrates the use of multi-line comments (this comment), a GET&#34;,
+    &#34;query, sortBy, use of exact matching (artists.0.name), and the use of a regular&#34;,
+    &#34;expression match (artists.1.name).&#34;
+  ],
+  &#34;steps&#34;: [
+    {
+      &#34;label&#34;: &#34;List the artists&#34;,
+      &#34;path&#34;: &#34;?query={artists{name}}&#34;,
+      &#34;sortBy&#34;: {
+	&#34;artists&#34;: &#34;name&#34;
+      },
+      &#34;expect&#34;: {
+	&#34;data&#34;: {
+	  &#34;artists&#34;: [
+	    {
+              &#34;name&#34;: &#34;Fazerdaze&#34;
+	    },
+	    {
+              &#34;name&#34;: &#34;/Boys/&#34;
+	    }
+	  ]
+	}
+      }
+    }
+  ]
+}
+</pre>
+<p>
+The &#34;steps&#34; array contains Step objects that can include the following fields:
+</p>
+<pre>- label is an optional label that will be displayed during a run
+  if comments are being dislayed.
+
+- comment is an optional description of the step.
+
+- path is the path part of the URL that will be used in the
+  request to the GraphQL server. The path is assumed to be relative
+  to the base URL unless it starts with a &#39;/&#39; character.
+
+- content is the content when using a POST request. If the
+  Content is not empty then a POST is used. If it is empty then a GET
+  request is made to the server. The string should be either GraphQL
+  or the HTTP GET format.
+
+- json if true and a POST request then the JSON format will be
+  used with a COntent-Type of &#34;applicaiton/json&#34; otherwise the
+  Content will be sent as GraphQL with a Content-Type of
+  &#34;application/graphql&#34;.
+
+- remember in a series of steps it is often helpful to remember
+  values from earlier steps. The Remember map describes what to
+  remember and what key to store that value in. In the map, the keys
+  are the keys for the memory cache while the Remember map values are
+  the path to the value to remember. The path is a simple dot
+  delimited path. It is not a full JSON path (maybe in the future).
+
+- op is the operation to include in either the URL query or as a
+  value for the &#39;operationName&#39; if using JSON in the Content.
+
+- vars are the variables to be passed along with a GraphQL
+  request. They are appended to the URL or added to the JSON
+  &#39;variables&#39; element if the POST contents is JSON. The values in the
+  Vars map can be either a value or a string that begines with a &#39;$&#39;
+  which indicates a rmembered value should be used instead.
+
+- sortBy are the sort keys for the result. Depending on the
+  implementation of the GraphQL server, the order of returned objects
+  may not be consistent. To make it easier to use in testing the
+  SortBy keys are the paths to arrays while the value for the keys
+  are the attributes to sort on.
+
+- expect is the expected contents. Like the Content it can be a
+  nil, string, array, or map. A nil value indicates no checking of
+  the response is needed. Strings are used mostly for fetched HTML
+  while the normal JSON responses are converted to a genereric
+  map[string]interface{} and compared to the Expect value.
+
+  The rules for comparison are:
+
+   1) Any element in the Expect value must be present in the response.
+
+   2) Elements in the response not in the Expect value are ignored.
+
+   3) If the Expect value is a string that starts and ends with a &#39;/&#39;
+      character the string is assumed to be a regular expression is
+      matched against the string in the reponse.
+
+   4) Maps and arrays are followed recursively.
+</pre>
+
+
+			</div>
+		</div>
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+
+				<dd><a href="#pkg-constants">Constants</a></dd>
+
+
+
+
+
+				<dd><a href="#Runner">type Runner</a></dd>
+
+
+
+					<dd>&nbsp; &nbsp; <a href="#Runner.JSON">func (r *Runner) JSON(indents ...int) []byte</a></dd>
+
+
+					<dd>&nbsp; &nbsp; <a href="#Runner.Log">func (r *Runner) Log(color string, format string, args ...interface{})</a></dd>
+
+
+					<dd>&nbsp; &nbsp; <a href="#Runner.Native">func (r *Runner) Native() interface{}</a></dd>
+
+
+					<dd>&nbsp; &nbsp; <a href="#Runner.Run">func (r *Runner) Run() (err error)</a></dd>
+
+
+					<dd>&nbsp; &nbsp; <a href="#Runner.String">func (r *Runner) String() string</a></dd>
+
+
+
+				<dd><a href="#Step">type Step</a></dd>
+
+
+
+					<dd>&nbsp; &nbsp; <a href="#Step.Execute">func (s *Step) Execute(uc *UseCase) error</a></dd>
+
+
+					<dd>&nbsp; &nbsp; <a href="#Step.Native">func (s *Step) Native() interface{}</a></dd>
+
+
+					<dd>&nbsp; &nbsp; <a href="#Step.Set">func (s *Step) Set(data interface{}) (err error)</a></dd>
+
+
+
+				<dd><a href="#UseCase">type UseCase</a></dd>
+
+
+					<dd>&nbsp; &nbsp; <a href="#NewUseCase">func NewUseCase(filepath string) (uc *UseCase, err error)</a></dd>
+
+
+
+					<dd>&nbsp; &nbsp; <a href="#UseCase.JSON">func (uc *UseCase) JSON(indents ...int) []byte</a></dd>
+
+
+					<dd>&nbsp; &nbsp; <a href="#UseCase.Native">func (uc *UseCase) Native() interface{}</a></dd>
+
+
+					<dd>&nbsp; &nbsp; <a href="#UseCase.Run">func (uc *UseCase) Run(r *Runner) (err error)</a></dd>
+
+
+					<dd>&nbsp; &nbsp; <a href="#UseCase.String">func (uc *UseCase) String() string</a></dd>
+
+
+
+			</dl>
+			</div><!-- #manual-nav -->
+
+
+
+
+			<h3>Package files</h3>
+			<p>
+			<span style="font-size:90%">
+
+				<a href="/src/github.com/ohler55/graphql-test-tool/gtt/gtt.go">gtt.go</a>
+
+				<a href="/src/github.com/ohler55/graphql-test-tool/gtt/runner.go">runner.go</a>
+
+				<a href="/src/github.com/ohler55/graphql-test-tool/gtt/step.go">step.go</a>
+
+				<a href="/src/github.com/ohler55/graphql-test-tool/gtt/usecase.go">usecase.go</a>
+
+				<a href="/src/github.com/ohler55/graphql-test-tool/gtt/util.go">util.go</a>
+
+			</span>
+			</p>
+
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+
+
+
+			<h2 id="pkg-constants">Constants</h2>
+
+
+				<pre>const (
+
+    <span class="comment">// Debug for debug logging.</span>
+    <span id="Debug">Debug</span> = &#34;\x1b[35m&#34; <span class="comment">// dark cyan</span>
+)</pre>
+
+
+
+
+
+
+
+			<h2 id="Runner">type <a href="/src/github.com/ohler55/graphql-test-tool/gtt/runner.go?s=518:1453#L15">Runner</a>
+				<a class="permalink" href="#Runner">&#xb6;</a>
+
+
+			</h2>
+			<p>
+Runner runs UseCases. It provide focal point for an assembly of use case
+tests. Test output is feature based. A flag is available for each category
+of output.
+</p>
+
+			<pre>type Runner struct {
+
+<span id="Runner.Server"></span>    <span class="comment">// Server is the host and port of a URL. Example: http://localhost:8080</span>
+    Server <a href="/pkg/builtin/#string">string</a>
+
+<span id="Runner.Base"></span>    <span class="comment">// Base of the URL path. By convention this is usually &#34;/graphql&#34;.</span>
+    Base <a href="/pkg/builtin/#string">string</a>
+
+<span id="Runner.ShowComments"></span>    <span class="comment">// ShowComments if true will cause comments to be printed during a run.</span>
+    ShowComments <a href="/pkg/builtin/#bool">bool</a>
+
+<span id="Runner.ShowRequests"></span>    <span class="comment">// ShowRequests if true will cause request URL and content to be printed</span>
+    <span class="comment">// during a run.</span>
+    ShowRequests <a href="/pkg/builtin/#bool">bool</a>
+
+<span id="Runner.ShowResponses"></span>    <span class="comment">// ShowResponses if true will cause response JSON to be printed during a run.</span>
+    ShowResponses <a href="/pkg/builtin/#bool">bool</a>
+
+<span id="Runner.NoColor"></span>    <span class="comment">// NoColor if true turns off colorized output.</span>
+    NoColor <a href="/pkg/builtin/#bool">bool</a>
+
+<span id="Runner.Indent"></span>    <span class="comment">// Indent is the number of spaces to indent JSON resonses. If 0 no</span>
+    <span class="comment">// modification to responses are made otherwise the JSON is unmarshalled</span>
+    <span class="comment">// and re-marshalled with an indentation.</span>
+    Indent <a href="/pkg/builtin/#int">int</a>
+
+<span id="Runner.UseCases"></span>    <span class="comment">// UseCases to run.</span>
+    UseCases []*<a href="#UseCase">UseCase</a>
+
+<span id="Runner.Writer"></span>    <span class="comment">// Writer is an alternate io.Writer that will be used in place of writing</span>
+    <span class="comment">// to Stdout when logging if not nil.</span>
+    Writer <a href="/pkg/io/">io</a>.<a href="/pkg/io/#Writer">Writer</a>
+}
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+				<h3 id="Runner.JSON">func (*Runner) <a href="/src/github.com/ohler55/graphql-test-tool/gtt/runner.go?s=1748:1792#L66">JSON</a>
+					<a class="permalink" href="#Runner.JSON">&#xb6;</a>
+
+
+				</h3>
+				<pre>func (r *<a href="#Runner">Runner</a>) JSON(indents ...<a href="/pkg/builtin/#int">int</a>) []<a href="/pkg/builtin/#byte">byte</a></pre>
+
+
+
+
+
+
+				<h3 id="Runner.Log">func (*Runner) <a href="/src/github.com/ohler55/graphql-test-tool/gtt/runner.go?s=2610:2680#L101">Log</a>
+					<a class="permalink" href="#Runner.Log">&#xb6;</a>
+
+
+				</h3>
+				<pre>func (r *<a href="#Runner">Runner</a>) Log(color <a href="/pkg/builtin/#string">string</a>, format <a href="/pkg/builtin/#string">string</a>, args ...interface{})</pre>
+				<p>
+Log output for one of the categories.
+</p>
+
+
+
+
+
+
+				<h3 id="Runner.Native">func (*Runner) <a href="/src/github.com/ohler55/graphql-test-tool/gtt/runner.go?s=2103:2140#L82">Native</a>
+					<a class="permalink" href="#Runner.Native">&#xb6;</a>
+
+
+				</h3>
+				<pre>func (r *<a href="#Runner">Runner</a>) Native() interface{}</pre>
+				<p>
+Native version of the Runner. Used for JSON() which is mostly for
+debugging.
+</p>
+
+
+
+
+
+
+				<h3 id="Runner.Run">func (*Runner) <a href="/src/github.com/ohler55/graphql-test-tool/gtt/runner.go?s=1476:1510#L50">Run</a>
+					<a class="permalink" href="#Runner.Run">&#xb6;</a>
+
+
+				</h3>
+				<pre>func (r *<a href="#Runner">Runner</a>) Run() (err <a href="/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Run the usecases.
+</p>
+
+
+
+
+
+
+				<h3 id="Runner.String">func (*Runner) <a href="/src/github.com/ohler55/graphql-test-tool/gtt/runner.go?s=1685:1717#L62">String</a>
+					<a class="permalink" href="#Runner.String">&#xb6;</a>
+
+
+				</h3>
+				<pre>func (r *<a href="#Runner">Runner</a>) String() <a href="/pkg/builtin/#string">string</a></pre>
+
+
+
+
+
+
+
+
+			<h2 id="Step">type <a href="/src/github.com/ohler55/graphql-test-tool/gtt/step.go?s=315:3185#L9">Step</a>
+				<a class="permalink" href="#Step">&#xb6;</a>
+
+
+			</h2>
+			<p>
+Step is a step in a use case. Each describes how an HTTP request will be
+sent to a GraphQL server and what to do with the response.
+</p>
+
+			<pre>type Step struct {
+
+<span id="Step.Label"></span>    <span class="comment">// Label of the step as a way to refer to the step.</span>
+    Label <a href="/pkg/builtin/#string">string</a>
+
+<span id="Step.Comment"></span>    <span class="comment">// Comment describes the step.</span>
+    Comment <a href="/pkg/builtin/#string">string</a>
+
+<span id="Step.Path"></span>    <span class="comment">// Path is the path part of the URL that will be used in the request to</span>
+    <span class="comment">// the GraphQL server. The path is assumed to be relative to the base URL</span>
+    <span class="comment">// unless it starts with a &#39;/&#39; character.</span>
+    Path <a href="/pkg/builtin/#string">string</a>
+
+<span id="Step.Content"></span>    <span class="comment">// Content is the content when using a POST request. If the Content is not</span>
+    <span class="comment">// empty then a POST is used. If it is empty then a GET request is made to</span>
+    <span class="comment">// the server. The string should be either GraphQL or the HTTP GET format.</span>
+    Content <a href="/pkg/builtin/#string">string</a>
+
+<span id="Step.UseJSON"></span>    <span class="comment">// UseJSON if true and a POST request then the JSON format will be used</span>
+    <span class="comment">// with a COntent-Type of &#34;applicaiton/json&#34; otherwise the Content will be</span>
+    <span class="comment">// sent as GraphQL with a Content-Type of &#34;application/graphql&#34;.</span>
+    UseJSON <a href="/pkg/builtin/#bool">bool</a>
+
+<span id="Step.Remember"></span>    <span class="comment">// Remember in a series of steps it is often helpful to remember values</span>
+    <span class="comment">// from earlier steps. The Remember map describes what to remember and</span>
+    <span class="comment">// what key to store that value in. In the map, the keys are the keys for</span>
+    <span class="comment">// the memory cache while the Remember map values are the path to the</span>
+    <span class="comment">// value to remember. The path is a simple dot delimited path. It is not a</span>
+    <span class="comment">// full JSON path (maybe in the future).</span>
+    Remember map[<a href="/pkg/builtin/#string">string</a>]<a href="/pkg/builtin/#string">string</a>
+
+<span id="Step.Op"></span>    <span class="comment">// Op is the operation to include in either the URL query or as a value</span>
+    <span class="comment">// for the &#39;operationName&#39; if using JSON in the Content.</span>
+    Op <a href="/pkg/builtin/#string">string</a>
+
+<span id="Step.Vars"></span>    <span class="comment">// Vars are the variables to be passed along with a GraphQL request. They</span>
+    <span class="comment">// are appended to the URL or added to the JSON &#39;variables&#39; element if the</span>
+    <span class="comment">// POST contents is JSON. The values in the Vars map can be either a value</span>
+    <span class="comment">// or a string that begines with a &#39;$&#39; which indicates a rmembered value</span>
+    <span class="comment">// should be used instead.</span>
+    Vars map[<a href="/pkg/builtin/#string">string</a>]interface{}
+
+<span id="Step.SortBy"></span>    <span class="comment">// SortBy are the sort keys for the result. Depending on the</span>
+    <span class="comment">// implementation of the GraphQL server, the order of returned objects may</span>
+    <span class="comment">// not be consistent. To make it easier to use in testing the SortBy keys</span>
+    <span class="comment">// are the paths to arrays while the value for the keys are the attributes</span>
+    <span class="comment">// to sort on.</span>
+    SortBy map[<a href="/pkg/builtin/#string">string</a>]<a href="/pkg/builtin/#string">string</a>
+
+<span id="Step.Expect"></span>    <span class="comment">// Expect is the expected contents. Like the Content it can be a nil, string,</span>
+    <span class="comment">// array, or map. A nil value indicates no checking of the response is</span>
+    <span class="comment">// needed. Strings are used mostly for fetched HTML while the normal JSON</span>
+    <span class="comment">// responses are converted to a genereric map[string]interface{} and</span>
+    <span class="comment">// compared to the Expect value.</span>
+    <span class="comment">//</span>
+    <span class="comment">// The rules for comparison are:</span>
+    <span class="comment">//   1) Any element in the Expect value must be present in the response.</span>
+    <span class="comment">//   2) Elements in the response not in the Expect value are ignored.</span>
+    <span class="comment">//   3) If the Expect value is a string that starts and ends with a &#39;/&#39;</span>
+    <span class="comment">//      character the string is assumed to be a regular expression is</span>
+    <span class="comment">//      matched against the string in the reponse.</span>
+    <span class="comment">//   4) Maps and arrays are followed recursively.</span>
+    Expect interface{}
+}
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+				<h3 id="Step.Execute">func (*Step) <a href="/src/github.com/ohler55/graphql-test-tool/gtt/step.go?s=4803:4844#L142">Execute</a>
+					<a class="permalink" href="#Step.Execute">&#xb6;</a>
+
+
+				</h3>
+				<pre>func (s *<a href="#Step">Step</a>) Execute(uc *<a href="#UseCase">UseCase</a>) <a href="/pkg/builtin/#error">error</a></pre>
+				<p>
+Execute the step using the information in the provided use case such as
+remembered values and base URL.
+</p>
+
+
+
+
+
+
+				<h3 id="Step.Native">func (*Step) <a href="/src/github.com/ohler55/graphql-test-tool/gtt/step.go?s=4157:4192#L115">Native</a>
+					<a class="permalink" href="#Step.Native">&#xb6;</a>
+
+
+				</h3>
+				<pre>func (s *<a href="#Step">Step</a>) Native() interface{}</pre>
+
+
+
+
+
+
+				<h3 id="Step.Set">func (*Step) <a href="/src/github.com/ohler55/graphql-test-tool/gtt/step.go?s=3187:3235#L74">Set</a>
+					<a class="permalink" href="#Step.Set">&#xb6;</a>
+
+
+				</h3>
+				<pre>func (s *<a href="#Step">Step</a>) Set(data interface{}) (err <a href="/pkg/builtin/#error">error</a>)</pre>
+
+
+
+
+
+
+
+
+			<h2 id="UseCase">type <a href="/src/github.com/ohler55/graphql-test-tool/gtt/usecase.go?s=286:605#L4">UseCase</a>
+				<a class="permalink" href="#UseCase">&#xb6;</a>
+
+
+			</h2>
+			<p>
+UseCase encapsulates a use case composed of multiple steps. The use case
+can be read from a JSON file in which case the Filepath member will be set.
+</p>
+
+			<pre>type UseCase struct {
+
+<span id="UseCase.Comment"></span>    <span class="comment">// Comment is the description of the use case.</span>
+    Comment <a href="/pkg/builtin/#string">string</a>
+
+<span id="UseCase.Filepath"></span>    <span class="comment">// Filepath is the path to the file that the use case was read from or</span>
+    <span class="comment">// will be written to.</span>
+    Filepath <a href="/pkg/builtin/#string">string</a>
+
+<span id="UseCase.Steps"></span>    <span class="comment">// Steps are the steps to be taken in the use case.</span>
+    Steps []*<a href="#Step">Step</a>
+    <span class="comment">// contains filtered or unexported fields</span>
+}
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+				<h3 id="NewUseCase">func <a href="/src/github.com/ohler55/graphql-test-tool/gtt/usecase.go?s=656:713#L21">NewUseCase</a>
+					<a class="permalink" href="#NewUseCase">&#xb6;</a>
+
+
+				</h3>
+				<pre>func NewUseCase(filepath <a href="/pkg/builtin/#string">string</a>) (uc *<a href="#UseCase">UseCase</a>, err <a href="/pkg/builtin/#error">error</a>)</pre>
+				<p>
+NewUseCase creates a new UseCase from a file.
+</p>
+
+
+
+
+
+
+
+				<h3 id="UseCase.JSON">func (*UseCase) <a href="/src/github.com/ohler55/graphql-test-tool/gtt/usecase.go?s=1351:1397#L54">JSON</a>
+					<a class="permalink" href="#UseCase.JSON">&#xb6;</a>
+
+
+				</h3>
+				<pre>func (uc *<a href="#UseCase">UseCase</a>) JSON(indents ...<a href="/pkg/builtin/#int">int</a>) []<a href="/pkg/builtin/#byte">byte</a></pre>
+
+
+
+
+
+
+				<h3 id="UseCase.Native">func (*UseCase) <a href="/src/github.com/ohler55/graphql-test-tool/gtt/usecase.go?s=1627:1666#L68">Native</a>
+					<a class="permalink" href="#UseCase.Native">&#xb6;</a>
+
+
+				</h3>
+				<pre>func (uc *<a href="#UseCase">UseCase</a>) Native() interface{}</pre>
+
+
+
+
+
+
+				<h3 id="UseCase.Run">func (*UseCase) <a href="/src/github.com/ohler55/graphql-test-tool/gtt/usecase.go?s=1940:1985#L82">Run</a>
+					<a class="permalink" href="#UseCase.Run">&#xb6;</a>
+
+
+				</h3>
+				<pre>func (uc *<a href="#UseCase">UseCase</a>) Run(r *<a href="#Runner">Runner</a>) (err <a href="/pkg/builtin/#error">error</a>)</pre>
+
+
+
+
+
+
+				<h3 id="UseCase.String">func (*UseCase) <a href="/src/github.com/ohler55/graphql-test-tool/gtt/usecase.go?s=1285:1319#L50">String</a>
+					<a class="permalink" href="#UseCase.String">&#xb6;</a>
+
+
+				</h3>
+				<pre>func (uc *<a href="#UseCase">UseCase</a>) String() <a href="/pkg/builtin/#string">string</a></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		<h2 id="pkg-subdirectories">Subdirectories</h2>
+
+	<div class="pkg-dir">
+		<table>
+			<tr>
+				<th class="pkg-name">Name</th>
+				<th class="pkg-synopsis">Synopsis</th>
+			</tr>
+
+
+			<tr>
+				<td colspan="2"><a href="..">..</a></td>
+			</tr>
+
+
+
+				<tr>
+
+					<td class="pkg-name" style="padding-left: 0px;">
+						<a href="gtt/">gtt</a>
+					</td>
+
+					<td class="pkg-synopsis">
+
+					</td>
+				</tr>
+
+		</table>
+	</div>
+
+
+
+<div id="footer">
+Build version go1.13.5.<br>
+Except as <a href="https://developers.google.com/site-policies#restrictions">noted</a>,
+the content of this page is licensed under the
+Creative Commons Attribution 3.0 License,
+and code is licensed under a <a href="/LICENSE">BSD license</a>.<br>
+<a href="/doc/tos.html">Terms of Service</a> |
+<a href="http://www.google.com/intl/en/policies/privacy/">Privacy Policy</a>
+</div>
+
+</div><!-- .container -->
+</div><!-- #page -->
+</body>
+</html>
