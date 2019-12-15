@@ -50,6 +50,10 @@ files in the `test` directory.
 go get github.com/ohler55/graphql-test-tool
 ```
 
+## GoDocs
+
+Documentation is at [https://ohler55.github.io/graphql-test-tool](https://ohler55.github.io/graphql-test-tool).
+
 ## Releases
 
 See [CHANGELOG.md](CHANGELOG.md)
