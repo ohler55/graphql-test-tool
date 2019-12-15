@@ -1,0 +1,23 @@
+{
+  "steps": [
+    {
+      "label": "Like Top",
+      "json": false,
+      "content": [
+	"mutation Like($artist: String = \"Fazerdaze\", $song: String) {",
+	"  like(artist: $artist, song: $song) {",
+	"    name",
+	"    likes",
+	"  }",
+	"}"
+      ],
+      "vars": {
+	"song": "Jennifer"
+      },
+      "expect": {
+	"data": {
+	}
+      }
+    }
+  ]
+}

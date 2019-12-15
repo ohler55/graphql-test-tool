@@ -1,0 +1,14 @@
+{
+  "comment": "Get the schema types.",
+  "steps": [
+    {
+      "comment": "A use step comment.",
+      "path": "?query={__schema{types{name}}}",
+      "sortBy": {
+	"__schema.types": "name"
+      },
+      "expect": {
+      }
+    }
+  ]
+}
