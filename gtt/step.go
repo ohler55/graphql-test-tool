@@ -185,13 +185,15 @@ func (s *Step) Execute(uc *UseCase) error {
 		return fmt.Errorf("if using JSON the content can not be empty in step %s", s.Label)
 	}
 	if !s.UseJSON {
-		// Put the variables in the URL as a JSON string
-		vb, err := json.Marshal(vars)
-		if err != nil {
-			return err
+		// Put the variables in the URL as a JSON string if not empty.
+		if 0 < len(vars) {
+			vb, err := json.Marshal(vars)
+			if err != nil {
+				return err
+			}
+			u = fmt.Sprintf("%s%cvariables=%s", u, sep, string(vb))
+			sep = '&'
 		}
-		u = fmt.Sprintf("%s%cvariables=%s", u, sep, string(vb))
-		sep = '&'
 		if 0 < len(s.Op) {
 			u = fmt.Sprintf("%s%coperationName=%s", u, sep, s.Op)
 		}
@@ -250,6 +252,9 @@ func (s *Step) expectJSON(status int, actual []byte, uc *UseCase) (err error) {
 		uc.runner.Log(aResponse, "[%d] %s", status, string(actual))
 		return err
 	}
+	for path, key := range s.SortBy {
+		s.sortResult(result, strings.Split(path, "."), key)
+	}
 	if uc.runner.ShowResponses {
 		if 0 < uc.runner.Indent {
 			j, _ := json.MarshalIndent(result, "", strings.Repeat(" ", uc.runner.Indent))
@@ -257,9 +262,6 @@ func (s *Step) expectJSON(status int, actual []byte, uc *UseCase) (err error) {
 		} else {
 			uc.runner.Log(aResponse, "%s", string(actual))
 		}
-	}
-	for path, key := range s.SortBy {
-		s.sortResult(result, strings.Split(path, "."), key)
 	}
 	for k, path := range s.Remember {
 		s.remember(uc, result, k, strings.Split(path, "."))

@@ -4,7 +4,15 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
-## [1.0.0] - [2019-12-15]
+## [1.0.2] - [2019-12-16]
+
+Sorting
+
+### Fixed
+
+- Sort before displaying results instead of after.
+
+## [1.0.1] - [2019-12-16]
 
 Reorganize
 
