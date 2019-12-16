@@ -1,3 +1,3 @@
-module github.com/ohler55/graphql-test-tool/gtt.go
+module github.com/ohler55/graphql-test-tool
 
 go 1.13
