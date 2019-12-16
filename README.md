@@ -25,15 +25,15 @@ go run main.go -s http://localhost:6464 -i 2 -v ../examples/top.json
 The gtt package can be use for unit testing as well. Create the use case files and
 
 ```
-runner := gtt.Runner{
-    Server: "http://localhost:6464",
-    Base:  "/graphql",
-}
 uc, err := gtt.NewUseCase("myfile.json"')
 if err != nil {
     return err
 }
-runner.UseCases = append(runner.UseCases, uc)
+runner := gtt.Runner{
+    Server: "http://localhost:6464",
+    Base:  "/graphql",
+    UseCases: []*gtt.UseCase{uc},
+}
 if err = r.Run(); err != nil {
     return err
 }

@@ -238,9 +238,16 @@ func (s *Step) Execute(uc *UseCase) error {
 	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)
 
+	if xstr, ok := s.Expect.(string); ok {
+		return s.expectString(xstr, string(body), uc.runner)
+	}
+	return s.expectJSON(res.StatusCode, body, uc)
+}
+
+func (s *Step) expectJSON(status int, actual []byte, uc *UseCase) (err error) {
 	var result interface{}
-	if err = json.Unmarshal(body, &result); err != nil {
-		uc.runner.Log(aResponse, "[%d] %s", res.StatusCode, string(body))
+	if err = json.Unmarshal(actual, &result); err != nil {
+		uc.runner.Log(aResponse, "[%d] %s", status, string(actual))
 		return err
 	}
 	if uc.runner.ShowResponses {
@@ -248,7 +255,7 @@ func (s *Step) Execute(uc *UseCase) error {
 			j, _ := json.MarshalIndent(result, "", strings.Repeat(" ", uc.runner.Indent))
 			uc.runner.Log(aResponse, "%s", string(j))
 		} else {
-			uc.runner.Log(aResponse, "%s", string(body))
+			uc.runner.Log(aResponse, "%s", string(actual))
 		}
 	}
 	for path, key := range s.SortBy {
@@ -263,6 +270,67 @@ func (s *Step) Execute(uc *UseCase) error {
 		}
 	}
 	return nil
+}
+
+func (s *Step) expectString(expect, actual string, r *Runner) (err error) {
+	if expect == actual {
+		r.Log(aResponse, "%s", actual)
+		return nil
+	}
+	// Find were the mismatch is.
+	var buf strings.Builder
+
+	lines := strings.Split(actual, "\n")
+	for i, xline := range strings.Split(expect, "\n") {
+		if len(lines) <= i {
+			err = fmt.Errorf("mismatch at line %d column 0", i+1)
+			if !r.NoColor {
+				buf.WriteString(normal)
+				buf.WriteString(red)
+				buf.WriteString("EOF")
+			}
+			break
+		}
+		aline := lines[i]
+		if xline == aline {
+			buf.WriteString(aline)
+			buf.WriteByte('\n')
+			continue
+		}
+		for j, xr := range []rune(xline) {
+			if len([]rune(aline)) <= j {
+				err = fmt.Errorf("mismatch at line %d column %d", i+1, j+1)
+				if !r.NoColor {
+					buf.WriteString(normal)
+					buf.WriteString(red)
+					buf.WriteByte('\n')
+					buf.WriteString(strings.Join(lines[i+1:], "\n"))
+				}
+				break
+			}
+			ar := []rune(aline)[j]
+			if xr == ar {
+				buf.WriteRune(ar)
+				continue
+			}
+			err = fmt.Errorf("mismatch at line %d column %d", i+1, j+1)
+			if !r.NoColor {
+				buf.WriteString(normal)
+				buf.WriteString(red)
+				buf.WriteString(aline[j:])
+				buf.WriteByte('\n')
+				buf.WriteString(strings.Join(lines[i+1:], "\n"))
+			}
+			break
+		}
+		break
+	}
+	if !r.NoColor {
+		buf.WriteString(normal)
+	}
+	r.Log(aResponse, "%s", buf.String())
+
+	return
 }
 
 func (s *Step) sortResult(result interface{}, path []string, key string) {

@@ -17,6 +17,7 @@ const (
 	normal    = "\x1b[m" // back to normal
 	// Debug for debug logging.
 	Debug = "\x1b[35m" // dark cyan
+	red   = "\x1b[31m" // red
 )
 
 // Runner runs UseCases. It provide focal point for an assembly of use case
