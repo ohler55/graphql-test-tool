@@ -384,8 +384,8 @@ func (s *Step) remember(uc *UseCase, result interface{}, rkey string, path []str
 }
 
 func (s *Step) check(result interface{}) error {
-	if loc := match(result, s.Expect); loc != nil {
-		return fmt.Errorf("result does not match expected at %s", strings.Join(loc, "."))
+	if loc, av, xv := match(result, s.Expect); loc != nil {
+		return fmt.Errorf("%s result does not match expected at %s. %v != %v", s.Label, strings.Join(loc, "."), av, xv)
 	}
 	return nil
 }

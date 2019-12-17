@@ -4,6 +4,14 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
+## [1.0.5] - [2019-12-17]
+
+Test Reporting Improvements
+
+### Added
+
+- Displays mismatched values as part of error message when actual is not the same as expected.
+
 ## [1.0.2] - [2019-12-16]
 
 Sorting

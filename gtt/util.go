@@ -86,27 +86,27 @@ func addAny(m map[string]interface{}, key string, value interface{}) {
 
 // compare results
 
-func match(result interface{}, expect interface{}) []string {
+func match(result interface{}, expect interface{}) ([]string, interface{}, interface{}) {
 	switch x := expect.(type) {
 	case map[string]interface{}:
 		if rm, ok := result.(map[string]interface{}); ok {
 			for k, v := range x {
-				if loc := match(rm[k], v); loc != nil {
-					return append([]string{k}, loc...)
+				if loc, av, xv := match(rm[k], v); loc != nil {
+					return append([]string{k}, loc...), av, xv
 				}
 			}
 		} else {
-			return []string{}
+			return []string{}, result, expect
 		}
 	case []interface{}:
 		if ra, ok := result.([]interface{}); ok {
 			for i, v := range x {
-				if loc := match(ra[i], v); loc != nil {
-					return append([]string{strconv.Itoa(i)}, loc...)
+				if loc, av, xv := match(ra[i], v); loc != nil {
+					return append([]string{strconv.Itoa(i)}, loc...), av, xv
 				}
 			}
 		} else {
-			return []string{}
+			return []string{}, result, expect
 		}
 	case string:
 		if rs, ok := result.(string); ok {
@@ -117,15 +117,15 @@ func match(result interface{}, expect interface{}) []string {
 				match = (rs == x)
 			}
 			if !match {
-				return []string{}
+				return []string{}, result, expect
 			}
 		} else {
-			return []string{}
+			return []string{}, result, expect
 		}
 	default:
 		if result != expect {
-			return []string{}
+			return []string{}, result, expect
 		}
 	}
-	return nil
+	return nil, nil, nil
 }
