@@ -100,6 +100,9 @@ func match(result interface{}, expect interface{}) ([]string, interface{}, inter
 		}
 	case []interface{}:
 		if ra, ok := result.([]interface{}); ok {
+			if len(ra) != len(x) {
+				return []string{}, nil, expect
+			}
 			for i, v := range x {
 				if loc, av, xv := match(ra[i], v); loc != nil {
 					return append([]string{strconv.Itoa(i)}, loc...), av, xv
