@@ -4,6 +4,14 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
+## [1.0.6] - [2019-12-18]
+
+Array limits bug fix
+
+### Fixed
+
+- Check for array comparisons now check for length.
+
 ## [1.0.5] - [2019-12-17]
 
 Test Reporting Improvements
