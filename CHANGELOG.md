@@ -4,9 +4,9 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
-## [1.0.6] - [2019-12-18]
+## [1.0.7] - [2019-12-18]
 
-Array limits bug fix
+Array limits bug fix (v1.0.6 wasn't picked up by go mod, bug in sum.golang.org)
 
 ### Fixed
 
