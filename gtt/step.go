@@ -336,23 +336,28 @@ func (s *Step) expectString(expect, actual string, r *Runner) (err error) {
 }
 
 func (s *Step) sortResult(result interface{}, path []string, key string) {
-	if mr, ok := result.(map[string]interface{}); ok {
-		if v := mr[path[0]]; v != nil {
-			if 1 < len(path) {
-				s.sortResult(v, path[1:], key)
-			} else if a, _ := v.([]interface{}); a != nil {
-				sort.Slice(a, func(i, j int) bool {
-					var x string
-					var y string
-					if m, _ := a[i].(map[string]interface{}); m != nil {
-						x, _ = m[key].(string)
-					}
-					if m, _ := a[j].(map[string]interface{}); m != nil {
-						y, _ = m[key].(string)
-					}
-					return strings.Compare(x, y) < 0
-				})
+	switch tr := result.(type) {
+	case map[string]interface{}:
+		if v := tr[path[0]]; v != nil && 0 < len(path) {
+			s.sortResult(v, path[1:], key)
+		}
+	case []interface{}:
+		if 0 < len(path) {
+			for _, r := range tr {
+				s.sortResult(r, path, key)
 			}
+		} else {
+			sort.Slice(tr, func(i, j int) bool {
+				var x string
+				var y string
+				if m, _ := tr[i].(map[string]interface{}); m != nil {
+					x, _ = m[key].(string)
+				}
+				if m, _ := tr[j].(map[string]interface{}); m != nil {
+					y, _ = m[key].(string)
+				}
+				return strings.Compare(x, y) < 0
+			})
 		}
 	}
 }

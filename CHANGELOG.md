@@ -4,6 +4,14 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
+## [1.0.9] - [2019-12-31]
+
+Sort nested arrays
+
+### Fixed
+
+- Nested arrays are now sorted when specified with a `sortBy` step option.
+
 ## [1.0.8] - [2019-12-18]
 
 Add dockerfile to repository
