@@ -275,11 +275,6 @@ func (s *Step) expectJSON(status int, actual []byte, uc *UseCase) (err error) {
 }
 
 func (s *Step) expectString(expect, actual string, r *Runner) (err error) {
-	if expect == actual {
-		r.Log(aResponse, "%s", actual)
-		return nil
-	}
-	// Find were the mismatch is.
 	var buf strings.Builder
 
 	lines := strings.Split(actual, "\n")
@@ -294,7 +289,7 @@ func (s *Step) expectString(expect, actual string, r *Runner) (err error) {
 			break
 		}
 		aline := lines[i]
-		if xline == aline {
+		if path, _, _ := match(aline, xline); path == nil {
 			buf.WriteString(aline)
 			buf.WriteByte('\n')
 			continue
