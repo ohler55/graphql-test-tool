@@ -6,7 +6,9 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [1.0.10] - [2020-01-02]
 
-Enable linewise regex match when expecting strings
+### Added
+
+- Enable line-wise regex match when expecting strings
 
 ## [1.0.9] - [2019-12-31]
 
