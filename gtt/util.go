@@ -86,6 +86,7 @@ func addAny(m map[string]interface{}, key string, value interface{}) {
 
 // compare results
 
+// Returns path, result, expected
 func match(result interface{}, expect interface{}) ([]string, interface{}, interface{}) {
 	switch x := expect.(type) {
 	case map[string]interface{}:
