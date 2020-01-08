@@ -76,7 +76,8 @@ type Step struct {
 	//   2) Elements in the response not in the Expect value are ignored.
 	//   3) If the Expect value is a string that starts and ends with a '/'
 	//      character the string is assumed to be a regular expression is
-	//      matched against the string in the reponse.
+	//      matched against the string in the reponse or the response is
+	//      converted to a strings using fmt.Sprintf "%v" and then compared.
 	//   4) Maps and arrays are followed recursively.
 	Expect interface{}
 }

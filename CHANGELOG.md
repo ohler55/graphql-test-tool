@@ -4,6 +4,12 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
+## [1.0.11] - [2020-01-08]
+
+### Added
+
+- Regular expressions can now be used to match non-string responses.
+
 ## [1.0.10] - [2020-01-02]
 
 ### Added
