@@ -104,7 +104,8 @@ The "steps" array contains Step objects that can include the following fields:
 
     3) If the Expect value is a string that starts and ends with a '/'
        character the string is assumed to be a regular expression is
-       matched against the string in the reponse.
+       matched against the string in the reponse or the response is
+       converted to a strings using fmt.Sprintf "%v" and then compared.
 
     4) Maps and arrays are followed recursively.
 */

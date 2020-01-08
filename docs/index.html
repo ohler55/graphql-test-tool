@@ -202,7 +202,8 @@ The &#34;steps&#34; array contains Step objects that can include the following f
 
    3) If the Expect value is a string that starts and ends with a &#39;/&#39;
       character the string is assumed to be a regular expression is
-      matched against the string in the reponse.
+      matched against the string in the reponse or the response is
+      converted to a strings using fmt.Sprintf "%v" and then compared.
 
    4) Maps and arrays are followed recursively.
 </pre>
@@ -526,7 +527,8 @@ sent to a GraphQL server and what to do with the response.
     <span class="comment">//   2) Elements in the response not in the Expect value are ignored.</span>
     <span class="comment">//   3) If the Expect value is a string that starts and ends with a &#39;/&#39;</span>
     <span class="comment">//      character the string is assumed to be a regular expression is</span>
-    <span class="comment">//      matched against the string in the reponse.</span>
+    <span class="comment">//      matched against the string in the reponse or the response is</span>
+    <span class="comment">//      converted to a strings using fmt.Sprintf "%v" and then compared.</span>
     <span class="comment">//   4) Maps and arrays are followed recursively.</span>
     Expect interface{}
 }
