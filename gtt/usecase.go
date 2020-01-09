@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 	"strings"
 )
 
@@ -43,18 +44,45 @@ func NewUseCase(filepath string) (uc *UseCase, err error) {
 	if uc.Comment, err = asString(m["comment"]); err != nil {
 		return
 	}
-	if steps, ok := m["steps"].([]interface{}); ok {
-		for _, v := range steps {
-			step := Step{}
-			if err = step.Set(v); err != nil {
-				return
-			}
-			uc.Steps = append(uc.Steps, &step)
-		}
-	} else {
-		return nil, fmt.Errorf("%T is not a valid steps type", m["steps"])
+	if err = uc.addSteps(m["steps"]); err != nil {
+		return
 	}
 	return
+}
+
+// The arg can be either a string, array, or a map. A map is assumed to be a
+// single step while a string is a relative path to a file to include. The
+// included file should be an array of steps or steps and additional includes.
+func (uc *UseCase) addSteps(v interface{}) error {
+	switch tv := v.(type) {
+	case []interface{}:
+		for _, v = range tv {
+			if err := uc.addSteps(v); err != nil {
+				return err
+			}
+		}
+	case string:
+		filepath := filepath.Join(filepath.Dir(uc.Filepath), tv)
+		data, err := ioutil.ReadFile(filepath)
+		if err != nil {
+			return err
+		}
+		var steps []interface{}
+
+		if err = json.Unmarshal(data, &steps); err != nil {
+			return err
+		}
+		return uc.addSteps(steps)
+	case map[string]interface{}:
+		step := Step{}
+		if err := step.Set(v); err != nil {
+			return err
+		}
+		uc.Steps = append(uc.Steps, &step)
+	default:
+		return fmt.Errorf("%T is not a valid steps type", v)
+	}
+	return nil
 }
 
 func (uc *UseCase) String() string {
@@ -103,8 +131,10 @@ func (uc *UseCase) Run(r *Runner) (err error) {
 		r.Log(aComment, "\n%s\n", path)
 	}
 	for _, step := range uc.Steps {
-		if err = step.Execute(uc); err != nil {
-			break
+		if err == nil {
+			err = step.Execute(uc)
+		} else if step.Always {
+			_ = step.Execute(uc)
 		}
 	}
 	return

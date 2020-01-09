@@ -4,6 +4,14 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
+## [1.1.0] - [2020-01-09]
+
+### Added
+
+- Include file option added.
+
+- Step option `always` added which indicates the step should always be run even if the test has failed.
+
 ## [1.0.11] - [2020-01-08]
 
 ### Added

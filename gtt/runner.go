@@ -129,7 +129,7 @@ func (r *Runner) Log(color string, format string, args ...interface{}) {
 		format = color + format + normal
 	}
 	if r.Writer != nil {
-		r.Writer.Write([]byte(fmt.Sprintf(format, args...)))
+		_, _ = r.Writer.Write([]byte(fmt.Sprintf(format, args...)))
 	} else {
 		fmt.Printf(format, args...)
 	}

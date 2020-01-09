@@ -121,7 +121,7 @@ func match(result interface{}, expect interface{}) ([]string, interface{}, inter
 			if rs, ok := result.(string); ok {
 				match, _ = regexp.MatchString(x[1:len(x)-2], rs)
 			} else {
-				match, _ = regexp.MatchString(x[1:len(x)-2], fmt.Sprint("%v", result))
+				match, _ = regexp.MatchString(x[1:len(x)-2], fmt.Sprintf("%v", result))
 			}
 		} else if rs, ok := result.(string); ok {
 			match = (rs == x)

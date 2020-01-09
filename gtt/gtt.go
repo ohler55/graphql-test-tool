@@ -29,19 +29,20 @@ An example is:
         "label": "List the artists",
         "path": "?query={artists{name}}",
         "sortBy": {
-  	"artists": "name"
+          "artists": "name"
         },
+        "always": false,
         "expect": {
-  	"data": {
-  	  "artists": [
-  	    {
+          "data": {
+            "artists": [
+              {
                 "name": "Fazerdaze"
-  	    },
-  	    {
+              },
+              {
                 "name": "/Boys/"
-  	    }
-  	  ]
-  	}
+              }
+            ]
+          }
         }
       }
     ]
@@ -108,5 +109,14 @@ The "steps" array contains Step objects that can include the following fields:
        converted to a strings using fmt.Sprintf "%v" and then compared.
 
     4) Maps and arrays are followed recursively.
+
+ - always if included and true indicates the step should always be executed
+   even if a previous step has failed.
+
+The "steps" array can also contain strings. A string element is an include in
+that it should be a filepath relative to the original that is to a file to
+include in the steps. The include JSON file must be an array that includes
+either steps or additional includes.
+
 */
 package gtt

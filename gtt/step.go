@@ -80,6 +80,10 @@ type Step struct {
 	//      converted to a strings using fmt.Sprintf "%v" and then compared.
 	//   4) Maps and arrays are followed recursively.
 	Expect interface{}
+
+	// Always indicates the step should always be performed even if the test
+	// has failed. Usually used to assure cleanup steps are executed.
+	Always bool
 }
 
 func (s *Step) Set(data interface{}) (err error) {
@@ -92,6 +96,7 @@ func (s *Step) Set(data interface{}) (err error) {
 	s.Path, _ = m["path"].(string)
 	s.Op, _ = m["op"].(string)
 	s.UseJSON, _ = m["json"].(bool)
+	s.Always, _ = m["always"].(bool)
 	if s.Comment, err = asString(m["comment"]); err != nil {
 		return
 	}
