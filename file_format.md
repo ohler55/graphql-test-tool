@@ -93,7 +93,9 @@ The "steps" array contains Step objects that can include the following fields:
 
     1) Any element in the Expect value must be present in the response.
 
-    2) Elements in the response not in the Expect value are ignored.
+    2) Elements in the response not in the Expect value are ignored unless a
+       "*": null key value pair is present in which case any key not specified
+       must be null or no present.
 
     3) If the Expect value is a string that starts and ends with a '/'
        character the string is assumed to be a regular expression is

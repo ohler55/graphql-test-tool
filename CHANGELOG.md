@@ -4,6 +4,13 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
+## [1.2.0] - [2020-01-16]
+
+### Added
+
+- Exact matches on element in a map can be achieved with use of `"*": null` indicating
+  any element not explicitly called out must be either `null` or not present.
+
 ## [1.1.0] - [2020-01-09]
 
 ### Added

@@ -91,9 +91,23 @@ func match(result interface{}, expect interface{}) ([]string, interface{}, inter
 	switch x := expect.(type) {
 	case map[string]interface{}:
 		if rm, ok := result.(map[string]interface{}); ok {
+			checked := map[string]bool{}
+			exact := false
 			for k, v := range x {
+				if k == "*" {
+					exact = true
+				} else {
+					checked[k] = true
+				}
 				if loc, av, xv := match(rm[k], v); loc != nil {
 					return append([]string{k}, loc...), av, xv
+				}
+			}
+			if exact {
+				for k, v := range rm {
+					if !checked[k] && v != nil {
+						return []string{k}, v, nil
+					}
 				}
 			}
 		} else {
