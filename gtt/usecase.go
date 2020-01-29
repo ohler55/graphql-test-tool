@@ -123,7 +123,11 @@ func (uc *UseCase) Run(r *Runner) (err error) {
 	uc.memory = map[string]interface{}{}
 	path := uc.Filepath
 	if !r.NoColor {
-		path = underline + path + strings.Repeat(" ", (80-len(path))) + normal
+		if 80 <= len(path) {
+			path = underline + path + normal
+		} else {
+			path = underline + path + strings.Repeat(" ", (80-len(path))) + normal
+		}
 	}
 	if 0 < len(uc.Comment) {
 		r.Log(aComment, "\n%s\n%s\n", path, uc.Comment)

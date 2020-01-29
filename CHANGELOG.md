@@ -4,6 +4,12 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
+## [1.2.1] - [2020-01-29]
+
+### Fixed
+
+- Fixed display of use case filename when longer than 80 characters.
+
 ## [1.2.0] - [2020-01-16]
 
 ### Added
