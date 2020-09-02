@@ -4,6 +4,14 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
+## [1.3.0] - [2020-09-02]
+
+### Added
+
+- Request timeout added.
+
+- Headers can now be set on requests.
+
 ## [1.2.1] - [2020-01-29]
 
 ### Fixed

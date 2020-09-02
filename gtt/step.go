@@ -4,6 +4,7 @@ package gtt
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -12,6 +13,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Step is a step in a use case. Each describes how an HTTP request will be
@@ -84,6 +86,13 @@ type Step struct {
 	// Always indicates the step should always be performed even if the test
 	// has failed. Usually used to assure cleanup steps are executed.
 	Always bool
+
+	// Headers are any additional headers that should be added to HTTP
+	// requests.
+	Headers map[string]string
+
+	// Timeout duration for requests in seconds.
+	Timeout int64
 }
 
 func (s *Step) Set(data interface{}) (err error) {
@@ -97,6 +106,9 @@ func (s *Step) Set(data interface{}) (err error) {
 	s.Op, _ = m["op"].(string)
 	s.UseJSON, _ = m["json"].(bool)
 	s.Always, _ = m["always"].(bool)
+	if s.Timeout, _ = m["timeout"].(int64); s.Timeout < 1 {
+		s.Timeout = 10
+	}
 	if s.Comment, err = asString(m["comment"]); err != nil {
 		return
 	}
@@ -123,6 +135,11 @@ func (s *Step) Set(data interface{}) (err error) {
 	if v := m["vars"]; v != nil {
 		if s.Vars, ok = v.(map[string]interface{}); !ok {
 			return fmt.Errorf("%T is not a valid type for a map[string]interface{}", v)
+		}
+	}
+	if v := m["headers"]; v != nil {
+		if s.Headers, err = asMapStrStr(v); err != nil {
+			return
 		}
 	}
 	return nil
@@ -235,12 +252,24 @@ func (s *Step) Execute(uc *UseCase) error {
 	var err error
 
 	uc.runner.Log(aRequest, "URL: %s\nContent-Type: %s\n%s", u, contentType, contentStr)
+	var req *http.Request
+	cx, cf := context.WithTimeout(context.Background(), time.Second*time.Duration(s.Timeout))
+	defer cf()
+
 	if content == nil {
-		res, err = http.Get(u)
+		if req, err = http.NewRequestWithContext(cx, "GET", u, nil); err != nil {
+			return err
+		}
 	} else {
-		res, err = http.Post(u, contentType, content)
+		if req, err = http.NewRequestWithContext(cx, "POST", u, content); err != nil {
+			return err
+		}
+		req.Header.Add("Content-Type", contentType)
 	}
-	if err != nil {
+	for k, str := range s.Headers {
+		req.Header.Add(k, str)
+	}
+	if res, err = http.DefaultClient.Do(req); err != nil {
 		return err
 	}
 	defer res.Body.Close()

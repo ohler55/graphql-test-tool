@@ -1,3 +1,3 @@
 module github.com/ohler55/graphql-test-tool
 
-go 1.13
+go 1.15

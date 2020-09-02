@@ -21,19 +21,19 @@ An example is:
       "label": "List the artists",
       "path": "?query={artists{name}}",
       "sortBy": {
-	"artists": "name"
+        "artists": "name"
       },
       "expect": {
-	"data": {
-	  "artists": [
-	    {
+        "data": {
+          "artists": [
+            {
               "name": "Fazerdaze"
-	    },
-	    {
+            },
+            {
               "name": "/Boys/"
-	    }
-	  ]
-	}
+            }
+          ]
+        }
       }
     }
   ]
@@ -56,6 +56,12 @@ The "steps" array contains Step objects that can include the following fields:
    request is made to the server. The string should be either GraphQL
    or the HTTP GET format.
 
+ - **timeout** is the timeout in seconds to wait for the response to a
+   request. The default is 10 seconds.
+
+ - **headers** are the headers to add to the HTTP request in addition
+   to the Content-Type which is set when performing a POST.
+
  - **json** if true and a POST request then the JSON format will be
    used with a COntent-Type of "applicaiton/json" otherwise the
    Content will be sent as GraphQL with a Content-Type of
@@ -74,7 +80,7 @@ The "steps" array contains Step objects that can include the following fields:
  - **vars** are the variables to be passed along with a GraphQL
    request. They are appended to the URL or added to the JSON
    'variables' element if the POST contents is JSON. The values in the
-   Vars map can be either a value or a string that begines with a '$'
+   Vars map can be either a value or a string that begins with a '$'
    which indicates a rmembered value should be used instead.
 
  - **sortBy** are the sort keys for the result. Depending on the
