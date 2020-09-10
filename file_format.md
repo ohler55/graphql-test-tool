@@ -108,3 +108,5 @@ The "steps" array contains Step objects that can include the following fields:
        matched against the string in the reponse.
 
     4) Maps and arrays are followed recursively.
+
+ - **status** indicates the expected status code of the response if set.

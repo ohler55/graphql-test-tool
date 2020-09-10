@@ -4,6 +4,12 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
+## [1.4.0] - [2020-09-10]
+
+### Added
+
+- Options to set the expected response status code.
+
 ## [1.3.0] - [2020-09-02]
 
 ### Added

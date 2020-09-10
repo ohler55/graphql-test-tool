@@ -93,6 +93,9 @@ type Step struct {
 
 	// Timeout duration for requests in seconds.
 	Timeout int64
+
+	// Status expected in the response.
+	Status int
 }
 
 func (s *Step) Set(data interface{}) (err error) {
@@ -106,6 +109,12 @@ func (s *Step) Set(data interface{}) (err error) {
 	s.Op, _ = m["op"].(string)
 	s.UseJSON, _ = m["json"].(bool)
 	s.Always, _ = m["always"].(bool)
+	switch n := m["status"].(type) {
+	case float64:
+		s.Status = int(n)
+	case int64:
+		s.Status = int(n)
+	}
 	if s.Timeout, _ = m["timeout"].(int64); s.Timeout < 1 {
 		s.Timeout = 10
 	}
@@ -273,6 +282,13 @@ func (s *Step) Execute(uc *UseCase) error {
 		return err
 	}
 	defer res.Body.Close()
+
+	if 0 < s.Status && s.Status != res.StatusCode {
+		return fmt.Errorf("status code mismatch. Expected %d, received %d", s.Status, res.StatusCode)
+	}
+	if s.Expect == nil {
+		return nil
+	}
 	body, _ := ioutil.ReadAll(res.Body)
 
 	if xstr, ok := s.Expect.(string); ok {
