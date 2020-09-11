@@ -4,6 +4,12 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
+## [1.5.0] - [2020-09-11]
+
+### Added
+
+- Allow variable replacement in headers and content with `$(var)` pattern.
+
 ## [1.4.0] - [2020-09-10]
 
 ### Added

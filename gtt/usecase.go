@@ -143,3 +143,12 @@ func (uc *UseCase) Run(r *Runner) (err error) {
 	}
 	return
 }
+
+func (uc *UseCase) replaceVars(s string) string {
+	for k, v := range uc.memory {
+		pat := fmt.Sprintf("$(%s)", k)
+		rep := fmt.Sprintf("%s", v)
+		s = strings.ReplaceAll(s, pat, rep)
+	}
+	return s
+}

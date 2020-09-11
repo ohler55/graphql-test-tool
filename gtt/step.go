@@ -249,7 +249,7 @@ func (s *Step) Execute(uc *UseCase) error {
 			}
 			if b, err := json.Marshal(wrap); err == nil {
 				content = bytes.NewReader(b)
-				contentStr = string(b)
+				contentStr = uc.replaceVars(string(b))
 			} else {
 				return err
 			}
@@ -276,6 +276,7 @@ func (s *Step) Execute(uc *UseCase) error {
 		req.Header.Add("Content-Type", contentType)
 	}
 	for k, str := range s.Headers {
+		str = uc.replaceVars(str)
 		req.Header.Add(k, str)
 	}
 	if res, err = http.DefaultClient.Do(req); err != nil {
