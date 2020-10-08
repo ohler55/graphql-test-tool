@@ -4,6 +4,12 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
+## [1.5.1] - [2020-10-08]
+
+### Fixed
+
+- Timeout option fixed.
+
 ## [1.5.0] - [2020-09-11]
 
 ### Added

@@ -115,7 +115,12 @@ func (s *Step) Set(data interface{}) (err error) {
 	case int64:
 		s.Status = int(n)
 	}
-	if s.Timeout, _ = m["timeout"].(int64); s.Timeout < 1 {
+	switch n := m["timeout"].(type) {
+	case float64:
+		s.Timeout = int64(n)
+	case int64:
+		s.Timeout = int64(n)
+	default:
 		s.Timeout = 10
 	}
 	if s.Comment, err = asString(m["comment"]); err != nil {
