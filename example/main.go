@@ -237,6 +237,13 @@ func main() {
 	http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
 		handleGraphQL(w, r, root)
 	})
+	http.HandleFunc("/graphql/schema", func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
+		full := strings.EqualFold(q.Get("full"), "true")
+		desc := strings.EqualFold(q.Get("desc"), "true")
+		sdl := root.SDL(full, desc)
+		_, _ = w.Write([]byte(sdl))
+	})
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {})
 
 	if err = http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {

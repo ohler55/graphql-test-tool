@@ -38,56 +38,82 @@ the focus of this article is on the Go test setup.
 
 ## Application
 
-The example GraphQL application is taken directly from the
+The example GraphQL application is taken from the
 [GGql](https://github.com/UHN/ggql) reflection example. GGql is the
 fastest Go GraphQL server as well as being the easiest to use as shown
 by this
-[comparison](https://github.com/the-benchmarker/graphql-benchmarks/blob/develop/rates.md). The
-schema in the example is:
+[comparison](https://github.com/the-benchmarker/graphql-benchmarks/blob/develop/rates.md).
+Instead of going into detail here of how the application was put
+together is would be better to read the details in the
+[README.md](https://github.com/UHN/ggql/tree/master/examples/reflection/README.md)
+file for the example. The only changes to that example were the
+addition of a command option to set the port and support for the
+`/graphql/schema` URL path to return the schema as SDL.
 
-``` graphql
-type Query {
-  artist(name: String!): Artist
-  artists: [Artist]
-  top: Song
-}
+A [GGql](https://github.com/UHN/ggql) root object is able to return
+the formatted schema that it is serving. By adding an HTTP handler to
+`/graphql/schema` an HTTP request can be made to respond with the full
+schema in SDL format.
 
-type Mutation {
-  like(artist: String!, song: String!): Song
-  setLike(artist: String!, song: String!, count: Int!): Song
-}
-
-type Artist {
-  name: String!
-  songs: [Song]
-  origin: [String]
-}
-
-type Song {
-  name: String!
-  artist: Artist
-  duration: Int
-  release: Date
-  likes: Int
-}
-
-scalar Date
+``` golang
+	http.HandleFunc("/graphql/schema", func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
+		full := strings.EqualFold(q.Get("full"), "true")
+		desc := strings.EqualFold(q.Get("desc"), "true")
+		sdl := root.SDL(full, desc)
+		_, _ = w.Write([]byte(sdl))
+	})
 ```
 
 ## Test Setup
 
- - choices
-   - run as an app
-     + framework for testing against any app, not just go
-     - go test coverage tools don't work out of the box
-   - run as part of test
-     + output is displayed while running (debugging is easier)
-     + go coverage tools work
-     - go code needs to a cmd and package directory
- - gtt dir for scripts
- - with choice #1 a main_test.go start up app once and reuses
-   - can run either or any server
- - what each test looks like
+With the application ready to go a test setup is next. There are two
+choices when setting up the tests. One is to use the full application
+for a true black box test and the other is to split the application
+into a command portion and a package portion so that the package
+portion can be tested in the same process space as the test
+code. There are advantages and disadvantages to each.
+
+### True Black Box
+
+A true black box approach runs the application completely separate
+from the test code. This had the advantage of being able to test a
+server implemented in any language. The disadvantage is that the Go
+test coverage tool will not work. Running as a separate process also
+means debugging pront statements are a little more difficult to
+display.
+
+### Embedded Tests
+
+In order to run the application in the same code space as the test
+code it needs to be callable from the test code which means it needs
+to be in a package that can be imported. Thats not difficult to
+do. Just create a `cmd` directory and put a light weight `main()`
+function in an application directory of the `cmd` directory that calls
+the package where all the rest of the code resides. Go coverage tools
+then work and debug print statements show up as the tests are
+running. The downside to an embedded configuration is that the server
+has to be written in Go which isn't really much of a downside.
+
+### Implementation
+
+Since the true black box is a bit tricker to set up and since it also
+allows for testing servers written in languages other than Go that is
+the path taken for this article.
+
+Test scripts are placed in a `gtt` subdirectory for cleanliness only.
+
+While not necessary, the application will be started just once and
+then each test will be executed against the running app. The code to
+run the application is in `main_test.go` while the test functions for
+running the tests are in `song_test.go`.
+
+#### `main_test.go`
+
+
+#### `song_test.go`
+
+
 
 ## Test Scripts
 
@@ -96,7 +122,7 @@ the script file are in
 [file_format.md](https://github.com/ohler55/graphql-test-tool/blob/master/file_format.md)
 which can be referred to while we walk though the scripts.
 
- -
+ - TBD
 
 ## Summary
 

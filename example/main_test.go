@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/ohler55/graphql-test-tool/gtt"
-	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -91,7 +90,9 @@ func run(m *testing.M) (code int, err error) {
 
 func gttTest(t *testing.T, filepath string) {
 	uc, err := gtt.NewUseCase(filepath)
-	require.NoError(t, err)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 	r := gtt.Runner{
 		Server:   fmt.Sprintf("http://localhost:%d", testPort),
 		Base:     "/graphql",
@@ -103,5 +104,8 @@ func gttTest(t *testing.T, filepath string) {
 		r.ShowResponses = true
 		r.ShowRequests = true
 	}
-	require.NoError(t, r.Run())
+
+	if err = r.Run(); err != nil {
+		t.Fatal(err.Error())
+	}
 }
