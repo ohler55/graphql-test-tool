@@ -2,7 +2,7 @@
 
 Two servers are available. One writtent in Go and one written in Ruby.
 The Ruby implementation requires the
-[Agoo]((https://github.com/ohler55/agoo) gem which can be installed
+[Agoo](https://github.com/ohler55/agoo) gem which can be installed
 with this command:
 
 ```

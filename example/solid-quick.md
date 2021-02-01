@@ -110,10 +110,159 @@ running the tests are in `song_test.go`.
 
 #### `main_test.go`
 
+Since the tests can not be run without first starting the application
+it will be necessary to create a `TestMain()` function. After setting
+up a flag for executing a Ruby version of the application a call to
+the `run()` function is made. That function will do most of the work
+and return an error if anything goes wrong with the setup or the tests
+fail.
+
+``` golang
+func TestMain(m *testing.M) {
+	flag.BoolVar(&ruby, "ruby", ruby, "run the ruby server instead of go server")
+	flag.Parse()
+
+	if err := run(m); err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	os.Exit(0)
+}
+```
+
+The `run()` function first finds a free port to run the application on.
+
+``` golang
+func run(m *testing.M) (err error) {
+	var addr *net.TCPAddr
+	if addr, err = net.ResolveTCPAddr("tcp", "localhost:0"); err == nil {
+		var ln *net.TCPListener
+		if ln, err = net.ListenTCP("tcp", addr); err == nil {
+			testPort = ln.Addr().(*net.TCPAddr).Port
+			ln.Close()
+		}
+		if err != nil {
+			return
+		}
+	}
+```
+
+Then the application is started. Since we want to collect the output
+from the application we grab the application stdout before starting.
+
+``` golang
+	var cmd *exec.Cmd
+	if ruby {
+		cmd = exec.Command("ruby", "song.rb", "-p", strconv.Itoa(testPort))
+	} else {
+		cmd = exec.Command("go", "run", "main.go", "-p", strconv.Itoa(testPort))
+	}
+	stdout, _ := cmd.StdoutPipe()
+	if err = cmd.Start(); err != nil {
+		return
+	}
+```
+
+A go routine running concurrently will have to read the stdout while
+the application is running. The buffer size of stdout is limited so if
+the application generates too much output the application will hang
+trying to write to stdout. With the reading being done concurrently
+the `ioutil.ReadAll()` buffer will expand and collect all the
+output. After stdout is closed `ioutil.ReadAll()` will return but the
+main thread needs to be told it is free to continue and print the
+collected output. The `done` chan takes care of that.
+
+``` golang
+	var out []byte
+	done := make(chan bool)
+	go func() {
+		out, _ = ioutil.ReadAll(stdout)
+		done <- true
+	}()
+```
+
+The tests really shouldn't be started until the application has
+started. We could sleep but then that forces a slowdown of the
+test. It's better to continue once the application is up and accepting
+requests. A loop with a delay between attempts takes care of that.
+
+``` golang
+	for i := 0; i < 25; i++ {
+		u := fmt.Sprintf("http://localhost:%d", testPort)
+		var r *http.Response
+		if r, err = http.Get(u); err == nil {
+			r.Body.Close()
+			break
+		}
+		time.Sleep(time.Millisecond * 200)
+	}
+```
+
+If there were no errors the tests can be run.
+
+``` golang
+	if err == nil && 0 != m.Run() {
+		err = fmt.Errorf("tests failed")
+	}
+}
+```
+
+After the tests finish it's time to cleanup but killing the
+application and printing the application output. Note the wait on the
+`done` chan before proceeding to printing.
+
+``` golang
+	if cmd.Process != nil {
+		_ = cmd.Process.Kill()
+	}
+	stdout.Close()
+	<-done
+	if testing.Verbose() {
+		fmt.Println(string(out))
+	}
+```
 
 #### `song_test.go`
 
+Keeping with the DRY prinicple, a common `gttTest()` function is used
+for all the GTT tests. Since running a GTT test only varies by the
+script to be run a common function makes a lot of sense. Give a script
+file name a GTT UseCase is created follwed by creating a Runner with
+the server information. The final step is to tell the Runner to Run.
 
+``` golang
+func gttTest(t *testing.T, filepath string) {
+	uc, err := gtt.NewUseCase(filepath)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	r := gtt.Runner{
+		Server:   fmt.Sprintf("http://localhost:%d", testPort),
+		Base:     "/graphql",
+		Indent:   2,
+		UseCases: []*gtt.UseCase{uc},
+	}
+	if testing.Verbose() {
+		r.ShowComments = true
+		r.ShowResponses = true
+		r.ShowRequests = true
+	}
+	if err = r.Run(); err != nil {
+		t.Fatal(err.Error())
+	}
+}
+```
+
+Each test is set up to run in a separate test function. This allows
+sellecting individual tests from the command line with the go test
+`-run` option. The tests themselves just call the `gttTest()` function
+with the appropriate script file name.
+
+``` golang
+func TestTypes(t *testing.T) {
+	gttTest(t, "gtt/types.json")
+}
+```
 
 ## Test Scripts
 
@@ -122,7 +271,23 @@ the script file are in
 [file_format.md](https://github.com/ohler55/graphql-test-tool/blob/master/file_format.md)
 which can be referred to while we walk though the scripts.
 
+Touching on a few of the features available in GTT lets look at a few
+of the scripts.
+
+ - **comments** If using the scripts to also document use cases
+   comments are useful. Comments can be a single string value for a
+   `comment` key as in
+   [types.json](https://github.com/ohler55/graphql-test-tool/tree/master/example/gtt/types.json)
+   or multiple lines in an array as in
+   [artist_names_get.json](https://github.com/ohler55/graphql-test-tool/tree/master/example/gtt/artist_names_get.json).
+
  - TBD
+
+ - sortBy - artist_names_get.json
+ - remember - top.json
+ - GET vs POST - artist_names_get.json and artist_names_post.json
+ - leave off elements that don't matter - types.json
+
 
 ## Summary
 

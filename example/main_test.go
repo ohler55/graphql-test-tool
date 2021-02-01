@@ -11,8 +11,6 @@ import (
 	"strconv"
 	"testing"
 	"time"
-
-	"github.com/ohler55/graphql-test-tool/gtt"
 )
 
 var (
@@ -24,15 +22,14 @@ func TestMain(m *testing.M) {
 	flag.BoolVar(&ruby, "ruby", ruby, "run the ruby server instead of go server")
 	flag.Parse()
 
-	code, err := run(m)
-	if err != nil {
+	if err := run(m); err != nil {
 		fmt.Println(err.Error())
+		os.Exit(1)
 	}
-	os.Exit(code)
+	os.Exit(0)
 }
 
-func run(m *testing.M) (code int, err error) {
-	code = 1
+func run(m *testing.M) (err error) {
 	var addr *net.TCPAddr
 	if addr, err = net.ResolveTCPAddr("tcp", "localhost:0"); err == nil {
 		var ln *net.TCPListener
@@ -60,19 +57,6 @@ func run(m *testing.M) (code int, err error) {
 		out, _ = ioutil.ReadAll(stdout)
 		done <- true
 	}()
-	defer func() {
-		if cmd.Process != nil {
-			_ = cmd.Process.Kill()
-		}
-		// Should be redundant but for some reason stdout is not always
-		// closed when the process is killed.
-		stdout.Close()
-		<-done
-		if testing.Verbose() {
-			fmt.Println(string(out))
-		}
-	}()
-
 	for i := 0; i < 10; i++ {
 		u := fmt.Sprintf("http://localhost:%d", testPort)
 		var r *http.Response
@@ -82,30 +66,18 @@ func run(m *testing.M) (code int, err error) {
 		}
 		time.Sleep(time.Millisecond * 200)
 	}
-	if err == nil {
-		code = m.Run()
+	if err == nil && 0 != m.Run() {
+		err = fmt.Errorf("tests failed")
+	}
+	if cmd.Process != nil {
+		_ = cmd.Process.Kill()
+	}
+	// Should be redundant but for some reason stdout is not always
+	// closed when the process is killed.
+	stdout.Close()
+	<-done
+	if testing.Verbose() {
+		fmt.Println(string(out))
 	}
 	return
-}
-
-func gttTest(t *testing.T, filepath string) {
-	uc, err := gtt.NewUseCase(filepath)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	r := gtt.Runner{
-		Server:   fmt.Sprintf("http://localhost:%d", testPort),
-		Base:     "/graphql",
-		Indent:   2,
-		UseCases: []*gtt.UseCase{uc},
-	}
-	if testing.Verbose() {
-		r.ShowComments = true
-		r.ShowResponses = true
-		r.ShowRequests = true
-	}
-
-	if err = r.Run(); err != nil {
-		t.Fatal(err.Error())
-	}
 }
