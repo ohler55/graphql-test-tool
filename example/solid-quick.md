@@ -274,12 +274,11 @@ which can be referred to while we walk though the scripts.
 Touching on a few of the features available in GTT lets look at a few
 of the scripts.
 
- - **comments** If using the scripts to also document use cases
+ - **comments** - If using the scripts to also document use cases
    comments are useful. Comments can be a single string value for a
-   `comment` key as in
-   [types.json](https://github.com/ohler55/graphql-test-tool/tree/master/example/gtt/types.json)
-   or multiple lines in an array as in
-   [artist_names_get.json](https://github.com/ohler55/graphql-test-tool/tree/master/example/gtt/artist_names_get.json).
+   `comment` key as in [types.json](gtt/types.json) or multiple lines
+   in an array as in
+   [artist_names_get.json](gtt/artist_names_get.json).
 
  - TBD
 
