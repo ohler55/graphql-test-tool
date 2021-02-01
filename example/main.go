@@ -9,13 +9,14 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/ohler55/ojg/oj"
 	"github.com/uhn/ggql/pkg/ggql"
 )
 
 // Define the types and data in a generic way without considering the GraphQL
 // package then hookup the package as needed. This section is copied into all
 // golang framework applications.
-////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////
 // Start of GraphQL package neutral type definitions.
 
 func setupSongs() *Schema {
@@ -68,6 +69,19 @@ func (q *Query) Artist(name string) *Artist {
 	return nil
 }
 
+// Top returns the top song across all artists.
+func (q *Query) Top() *Song {
+	var top *Song
+	for _, a := range q.Artists {
+		for _, s := range a.Songs {
+			if top == nil || top.Likes < s.Likes {
+				top = s
+			}
+		}
+	}
+	return top
+}
+
 // Mutation represents the query node in a data/resolver graph.
 type Mutation struct {
 	query *Query // Query is the data store for this example
@@ -78,6 +92,17 @@ func (m *Mutation) Like(artist, song string) *Song {
 	if a := m.query.Artist(artist); a != nil {
 		if s := a.Song(song); s != nil {
 			s.Likes++
+			return s
+		}
+	}
+	return nil
+}
+
+// SetLike increments likes attribute the song of the artist specified.
+func (m *Mutation) SetLike(artist, song string, count int64) *Song {
+	if a := m.query.Artist(artist); a != nil {
+		if s := a.Song(song); s != nil {
+			s.Likes = int(count)
 			return s
 		}
 	}
@@ -198,9 +223,14 @@ func handleGraphQL(w http.ResponseWriter, req *http.Request, root *ggql.Root) {
 	w.Header().Set("Access-Control-Allow-Headers", "*")
 	w.Header().Set("Access-Control-Max-Age", "172800")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	var vars map[string]interface{}
+	if variables, err := oj.ParseString(req.URL.Query().Get("variables")); err == nil {
+		vars, _ = variables.(map[string]interface{})
+	}
+	op := req.URL.Query().Get("operationName")
 	switch req.Method {
 	case "GET":
-		result = root.ResolveString(req.URL.Query().Get("query"), "", nil)
+		result = root.ResolveString(req.URL.Query().Get("query"), op, vars)
 	case "POST":
 		defer func() { _ = req.Body.Close() }()
 		body, err := ioutil.ReadAll(req.Body)
@@ -209,7 +239,7 @@ func handleGraphQL(w http.ResponseWriter, req *http.Request, root *ggql.Root) {
 			_, _ = w.Write([]byte(err.Error()))
 			return
 		}
-		result = root.ResolveBytes(body, "", nil)
+		result = root.ResolveBytes(body, op, vars)
 	case "OPTIONS":
 		w.WriteHeader(200)
 		return

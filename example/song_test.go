@@ -10,7 +10,7 @@ import (
 func gttTest(t *testing.T, filepath string) {
 	uc, err := gtt.NewUseCase(filepath)
 	if err != nil {
-		t.Fatal(err.Error())
+		t.Fatalf("failed to create UseCase. %s", err)
 	}
 	r := gtt.Runner{
 		Server:   fmt.Sprintf("http://localhost:%d", testPort),
@@ -25,10 +25,26 @@ func gttTest(t *testing.T, filepath string) {
 	}
 
 	if err = r.Run(); err != nil {
-		t.Fatal(err.Error())
+		t.Fatalf("test failed. %s", err)
 	}
 }
 
 func TestTypes(t *testing.T) {
 	gttTest(t, "gtt/types.json")
+}
+
+func TestArtistsGet(t *testing.T) {
+	gttTest(t, "gtt/artist_names_get.json")
+}
+
+func TestArtistsPost(t *testing.T) {
+	gttTest(t, "gtt/artist_names_post.json")
+}
+
+func TestTop(t *testing.T) {
+	gttTest(t, "gtt/top.json")
+}
+
+func TestLike(t *testing.T) {
+	gttTest(t, "gtt/like.json")
 }

@@ -46,9 +46,10 @@ by this
 Instead of going into detail here of how the application was put
 together is would be better to read the details in the
 [README.md](https://github.com/UHN/ggql/tree/master/examples/reflection/README.md)
-file for the example. The only changes to that example were the
-addition of a command option to set the port and support for the
-`/graphql/schema` URL path to return the schema as SDL.
+file for the example. A few changes to the example we made to add a
+command option to set the port and support for the `/graphql/schema`
+URL path to return the schema as SDL. Additions were also made to add
+the mutation needed to make the example more interesting.
 
 A [GGql](https://github.com/UHN/ggql) root object is able to return
 the formatted schema that it is serving. By adding an HTTP handler to
