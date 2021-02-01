@@ -280,19 +280,26 @@ of the scripts.
    in an array as in
    [artist_names_get.json](gtt/artist_names_get.json).
 
- - TBD
+ - **sortBy** - Order is often important in arrays yet at times order
+   maybe be random depending on the data source that returns a list of
+   items. The `sortBy` option will sort output before comparing to the
+   expected. [artist_names_get.json](gtt/artist_names_get.json) is an
+   example of using the `sortBy` option.
 
- - sortBy - artist_names_get.json
- - remember - top.json
- - GET vs POST - artist_names_get.json and artist_names_post.json
- - leave off elements that don't matter - types.json
+ - **method** - Switching between HTTP methods, either GET or POST is
+   as simple as either providing a `content` element or not as
+   demonstrated in [artist_names_get.json](gtt/artist_names_get.json)
+   and [artist_names_post.json](gtt/artist_names_post.json).
 
+ - **remember** - Sometimes the result of one step is needed in a
+   subsequent step. The `remember` and `vars` elements provide that
+   functionality in [top.json](gtt/top.json).
 
 ## Summary
 
-While other packages were involved in managing the data behind the
-GraphQL servers, [GGql](https://github.com/UHN/ggql) was key in
-building the applications
+For the application, other packages were involved in managing the data
+behind the GraphQL servers but [GGql](https://github.com/UHN/ggql) was
+key in building the applications
 quickly. [GTT](https://github.com/ohler55/graphql-test-tool) was key
 to testing and providing examples to the teams writing the user
 portions of the project.
