@@ -23,7 +23,6 @@ func gttTest(t *testing.T, filepath string) {
 		r.ShowResponses = true
 		r.ShowRequests = true
 	}
-
 	if err = r.Run(); err != nil {
 		t.Fatalf("test failed. %s", err)
 	}

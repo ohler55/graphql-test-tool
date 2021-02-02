@@ -1,4 +1,8 @@
 {
+  "comment": [
+    "This script demonstrates the passing of variables in the URL. The vars element",
+    "is converted to a URL query and passed to the mutation."
+  ],
   "steps": [
     {
       "label": "Like Top",
