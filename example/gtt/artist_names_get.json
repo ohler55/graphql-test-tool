@@ -8,7 +8,7 @@
     {
       "path": "?query={artists{name}}",
       "sortBy": {
-	"artists": "name"
+	"data.artists": "name"
       },
       "expect": {
 	"data": {

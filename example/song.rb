@@ -1,7 +1,18 @@
 
 require 'date'
+require 'optparse'
 
 require 'agoo'
+
+opts = OptionParser.new(%{Usage: song
+
+Example GraphQL server.
+})
+
+$port = 6464
+opts.on('-p', '--port Integer', Integer, 'port to listen on') { |p| $port = p }
+opts.on('-h', '--help', 'Show this display')                  { puts opts.help; Process.exit!(0) }
+dirs = opts.parse(ARGV)
 
 Agoo::Log.configure(dir: '',
 		    console: true,
@@ -141,10 +152,10 @@ Song.new('Amphetanarchy', boys, 346, Date.new(2018, 9, 28))
 
 $schema = Schema.new(Query.new([fazerdaze, boys]))
 
-puts %^\nopen 'localhost:6464/graphql?query={artist(name:"Fazerdaze"){name,songs{name,duration}}}&indent=2' in a browser.\n\n^
-#http://localhost:6464/graphql?query={artists{name,origin,songs{name,duration,likes}},__schema{types{name,kind,fields{name}}}}
+puts %^\nopen 'localhost:#{$port}/graphql?query={artist(name:"Fazerdaze"){name,songs{name,duration}}}&indent=2' in a browser.\n\n^
+#http://localhost:#{$port}/graphql?query={artists{name,origin,songs{name,duration,likes}},__schema{types{name,kind,fields{name}}}}
 
-Agoo::Server.init(6464, 'root', thread_count: 1, graphql: '/graphql')
+Agoo::Server.init($port, 'root', thread_count: 1, graphql: '/graphql')
 Agoo::Server.start
 Agoo::GraphQL.schema($schema) {Agoo::GraphQL.load_file('song.graphql')}
 

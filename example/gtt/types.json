@@ -8,6 +8,10 @@
 	"__schema.types": "name"
       },
       "expect": {
+	"data": {
+	  "__schema": {
+	  }
+	}
       }
     }
   ]
