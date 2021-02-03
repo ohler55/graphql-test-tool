@@ -143,6 +143,57 @@ func match(result interface{}, expect interface{}) ([]string, interface{}, inter
 		if !match {
 			return []string{}, result, expect
 		}
+	case float64:
+		switch r := result.(type) {
+		case float64:
+			if r != x {
+				return []string{}, result, expect
+			}
+		case int64:
+			if float64(r) != x {
+				return []string{}, result, expect
+			}
+		case int:
+			if float64(r) != x {
+				return []string{}, result, expect
+			}
+		default:
+			return []string{}, result, expect
+		}
+	case int64:
+		switch r := result.(type) {
+		case float64:
+			if r != float64(x) {
+				return []string{}, result, expect
+			}
+		case int64:
+			if r != x {
+				return []string{}, result, expect
+			}
+		case int:
+			if int64(r) != x {
+				return []string{}, result, expect
+			}
+		default:
+			return []string{}, result, expect
+		}
+	case int:
+		switch r := result.(type) {
+		case float64:
+			if r != float64(x) {
+				return []string{}, result, expect
+			}
+		case int64:
+			if r != int64(x) {
+				return []string{}, result, expect
+			}
+		case int:
+			if r != x {
+				return []string{}, result, expect
+			}
+		default:
+			return []string{}, result, expect
+		}
 	default:
 		if result != expect {
 			return []string{}, result, expect

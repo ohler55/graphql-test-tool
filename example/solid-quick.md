@@ -333,7 +333,13 @@ few of of the scripts.
 
  - **remember** - Sometimes the result of one step is needed in a
    subsequent step. The `remember` and `vars` elements provide that
-   functionality in [top.json](gtt/top.json).
+   functionality in [top.json](gtt/top.sen).
+
+ - **lazy** - GTT is extremely tolerant of script format and supports
+   the [SEN](https://github.com/ohler55/ojg/blob/develop/sen.md)
+   (Simple Encoding Notation). The relaxed format is used in
+   [top.json](gtt/top.sen) but it also allow for JSON with errors such
+   as missing commas or extra commas.
 
 ## Summary
 

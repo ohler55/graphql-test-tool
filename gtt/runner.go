@@ -3,10 +3,10 @@
 package gtt
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
-	"strings"
+
+	"github.com/ohler55/ojg/oj"
 )
 
 const (
@@ -79,13 +79,7 @@ func (r *Runner) JSON(indents ...int) []byte {
 	if 0 < len(indents) {
 		indent = indents[0]
 	}
-	var j []byte
-	if 0 < indent {
-		j, _ = json.MarshalIndent(r.Native(), "", strings.Repeat(" ", indent))
-	} else {
-		j, _ = json.Marshal(r.Native())
-	}
-	return j
+	return []byte(oj.JSON(r, indent))
 }
 
 // Native version of the Runner. Used for JSON() which is mostly for
@@ -106,6 +100,10 @@ func (r *Runner) Native() interface{} {
 		"indent":        r.Indent,
 	}
 	return native
+}
+
+func (r *Runner) Simplify() interface{} {
+	return r.Native()
 }
 
 // Log output for one of the categories.

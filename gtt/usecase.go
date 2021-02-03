@@ -3,11 +3,13 @@
 package gtt
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
+
+	"github.com/ohler55/ojg/oj"
+	"github.com/ohler55/ojg/sen"
 )
 
 // UseCase encapsulates a use case composed of multiple steps. The use case
@@ -36,9 +38,13 @@ func NewUseCase(filepath string) (uc *UseCase, err error) {
 		return
 	}
 	var m map[string]interface{}
-
-	if err = json.Unmarshal(data, &m); err != nil {
+	var p sen.Parser
+	var v interface{}
+	if v, err = p.Parse(data); err != nil {
 		return
+	}
+	if m, _ = v.(map[string]interface{}); m == nil {
+		return nil, fmt.Errorf("expected a map, not a %T", v)
 	}
 	uc = &UseCase{Filepath: filepath}
 	if uc.Comment, err = asString(m["comment"]); err != nil {
@@ -68,9 +74,13 @@ func (uc *UseCase) addSteps(v interface{}) error {
 			return err
 		}
 		var steps []interface{}
-
-		if err = json.Unmarshal(data, &steps); err != nil {
+		var p sen.Parser
+		var pd interface{}
+		if pd, err = p.Parse(data); err != nil {
 			return err
+		}
+		if steps, _ = pd.([]interface{}); steps == nil {
+			return fmt.Errorf("expected a array, not a %T", pd)
 		}
 		return uc.addSteps(steps)
 	case map[string]interface{}:
@@ -94,13 +104,7 @@ func (uc *UseCase) JSON(indents ...int) []byte {
 	if 0 < len(indents) {
 		indent = indents[0]
 	}
-	var j []byte
-	if 0 < indent {
-		j, _ = json.MarshalIndent(uc.Native(), "", strings.Repeat(" ", indent))
-	} else {
-		j, _ = json.Marshal(uc.Native())
-	}
-	return j
+	return []byte(oj.JSON(uc, indent))
 }
 
 func (uc *UseCase) Native() interface{} {
@@ -115,6 +119,10 @@ func (uc *UseCase) Native() interface{} {
 		native["comment"] = easyString(uc.Comment)
 	}
 	return native
+}
+
+func (uc *UseCase) Simplify() interface{} {
+	return uc.Native()
 }
 
 func (uc *UseCase) Run(r *Runner) (err error) {

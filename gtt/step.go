@@ -3,9 +3,7 @@
 package gtt
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -14,6 +12,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ohler55/ojg/oj"
+	"github.com/ohler55/ojg/sen"
 )
 
 // Step is a step in a use case. Each describes how an HTTP request will be
@@ -37,7 +38,7 @@ type Step struct {
 	Content string
 
 	// UseJSON if true and a POST request then the JSON format will be used
-	// with a COntent-Type of "applicaiton/json" otherwise the Content will be
+	// with a Content-Type of "applicaiton/json" otherwise the Content will be
 	// sent as GraphQL with a Content-Type of "application/graphql".
 	UseJSON bool
 
@@ -224,11 +225,7 @@ func (s *Step) Execute(uc *UseCase) error {
 	if !s.UseJSON {
 		// Put the variables in the URL as a JSON string if not empty.
 		if 0 < len(vars) {
-			vb, err := json.Marshal(vars)
-			if err != nil {
-				return err
-			}
-			u = fmt.Sprintf("%s%cvariables=%s", u, sep, string(vb))
+			u = fmt.Sprintf("%s%cvariables=%s", u, sep, oj.JSON(vars))
 			sep = '&'
 		}
 		if 0 < len(s.Op) {
@@ -252,12 +249,9 @@ func (s *Step) Execute(uc *UseCase) error {
 			if 0 < len(s.Op) {
 				wrap["operationName"] = s.Op
 			}
-			if b, err := json.Marshal(wrap); err == nil {
-				content = bytes.NewReader(b)
-				contentStr = uc.replaceVars(string(b))
-			} else {
-				return err
-			}
+			j := oj.JSON(wrap)
+			content = strings.NewReader(j)
+			contentStr = uc.replaceVars(j)
 		} else {
 			content = strings.NewReader(s.Content)
 		}
@@ -304,8 +298,9 @@ func (s *Step) Execute(uc *UseCase) error {
 }
 
 func (s *Step) expectJSON(status int, actual []byte, uc *UseCase) (err error) {
+	var p sen.Parser
 	var result interface{}
-	if err = json.Unmarshal(actual, &result); err != nil {
+	if result, err = p.Parse(actual); err != nil {
 		uc.runner.Log(aResponse, "[%d] %s", status, string(actual))
 		return err
 	}
@@ -313,12 +308,7 @@ func (s *Step) expectJSON(status int, actual []byte, uc *UseCase) (err error) {
 		s.sortResult(result, strings.Split(path, "."), key)
 	}
 	if uc.runner.ShowResponses {
-		if 0 < uc.runner.Indent {
-			j, _ := json.MarshalIndent(result, "", strings.Repeat(" ", uc.runner.Indent))
-			uc.runner.Log(aResponse, "%s", string(j))
-		} else {
-			uc.runner.Log(aResponse, "%s", string(actual))
-		}
+		uc.runner.Log(aResponse, "%s", oj.JSON(result, uc.runner.Indent))
 	}
 	for k, path := range s.Remember {
 		s.remember(uc, result, k, strings.Split(path, "."))

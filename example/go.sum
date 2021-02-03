@@ -2,5 +2,7 @@ github.com/ohler55/graphql-test-tool v1.5.1 h1:1EaOEb4uPyEwMfreK0WaYnw9I8e33qKby
 github.com/ohler55/graphql-test-tool v1.5.1/go.mod h1:S6e+rOLo9a6qLVeMdV/CYSdJbHwe+e65T1eS5IQ395g=
 github.com/ohler55/ojg v1.4.0 h1:MpvFngWbF2UdTT8OcBgPrd29KgMTa884McQhafaCkaM=
 github.com/ohler55/ojg v1.4.0/go.mod h1:IgbYT58l2k6qnqchujchYshF7g6P9uJWZ5nLErRyTlg=
+github.com/ohler55/ojg v1.4.1 h1:N80WvE5Fj2jQeeiIQ+XQsJUDg9OBV3v3ftZEmbzeQew=
+github.com/ohler55/ojg v1.4.1/go.mod h1:IgbYT58l2k6qnqchujchYshF7g6P9uJWZ5nLErRyTlg=
 github.com/uhn/ggql v1.2.7 h1:aFbtF1zXC7HyDsaaehjz8StFKcazNuQS6c4Ip+j9GEQ=
 github.com/uhn/ggql v1.2.7/go.mod h1:w3R2prN3xZriZ1Sd5avnZn3M8UTLvwvWpxUVnMyq5JA=

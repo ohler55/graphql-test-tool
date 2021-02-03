@@ -65,7 +65,7 @@ The "steps" array contains Step objects that can include the following fields:
    or the HTTP GET format.
 
  - json if true and a POST request then the JSON format will be
-   used with a COntent-Type of "applicaiton/json" otherwise the
+   used with a Content-Type of "applicaiton/json" otherwise the
    Content will be sent as GraphQL with a Content-Type of
    "application/graphql".
 

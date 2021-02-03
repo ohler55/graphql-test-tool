@@ -41,7 +41,7 @@ func TestArtistsPost(t *testing.T) {
 }
 
 func TestTop(t *testing.T) {
-	gttTest(t, "gtt/top.json")
+	gttTest(t, "gtt/top.sen")
 }
 
 func TestLike(t *testing.T) {
