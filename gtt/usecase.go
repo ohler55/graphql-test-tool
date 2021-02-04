@@ -95,10 +95,12 @@ func (uc *UseCase) addSteps(v interface{}) error {
 	return nil
 }
 
+// String representation of the use case.
 func (uc *UseCase) String() string {
 	return string(uc.JSON())
 }
 
+// JSON version of the use case.
 func (uc *UseCase) JSON(indents ...int) []byte {
 	indent := 0
 	if 0 < len(indents) {
@@ -107,6 +109,7 @@ func (uc *UseCase) JSON(indents ...int) []byte {
 	return []byte(oj.JSON(uc, indent))
 }
 
+// Native returns a simplified version of the use case.
 func (uc *UseCase) Native() interface{} {
 	steps := make([]interface{}, 0, len(uc.Steps))
 	for _, step := range uc.Steps {
@@ -121,10 +124,12 @@ func (uc *UseCase) Native() interface{} {
 	return native
 }
 
+// Simplify returns a simplified version of the use case.
 func (uc *UseCase) Simplify() interface{} {
 	return uc.Native()
 }
 
+// Run the use case.
 func (uc *UseCase) Run(r *Runner) (err error) {
 	uc.runner = r
 	// Start with a fresh memory cache as each run is separate from any other.

@@ -70,10 +70,12 @@ func (r *Runner) Run() (err error) {
 	return
 }
 
+// String representation of the runner.
 func (r *Runner) String() string {
 	return string(r.JSON())
 }
 
+// JSON representation of the runner.
 func (r *Runner) JSON(indents ...int) []byte {
 	indent := 0
 	if 0 < len(indents) {
@@ -102,6 +104,7 @@ func (r *Runner) Native() interface{} {
 	return native
 }
 
+// Simplify returns a simplified version of the runner.
 func (r *Runner) Simplify() interface{} {
 	return r.Native()
 }

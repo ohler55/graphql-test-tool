@@ -99,6 +99,7 @@ type Step struct {
 	Status int
 }
 
+// Set the members of the step based on the data provided.
 func (s *Step) Set(data interface{}) (err error) {
 	m, _ := data.(map[string]interface{})
 	if m == nil {
@@ -160,6 +161,7 @@ func (s *Step) Set(data interface{}) (err error) {
 	return nil
 }
 
+// Native representation of the step.
 func (s *Step) Native() interface{} {
 	native := map[string]interface{}{
 		"label": s.Label,
