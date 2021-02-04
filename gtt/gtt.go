@@ -65,7 +65,7 @@ The "steps" array contains Step objects that can include the following fields:
    or the HTTP GET format.
 
  - json if true and a POST request then the JSON format will be
-   used with a Content-Type of "applicaiton/json" otherwise the
+   used with a Content-Type of "application/json" otherwise the
    Content will be sent as GraphQL with a Content-Type of
    "application/graphql".
 
@@ -107,7 +107,7 @@ The "steps" array contains Step objects that can include the following fields:
 
     3) If the Expect value is a string that starts and ends with a '/'
        character the string is assumed to be a regular expression is
-       matched against the string in the reponse or the response is
+       matched against the string in the response or the response is
        converted to a strings using fmt.Sprintf "%v" and then compared.
 
     4) Maps and arrays are followed recursively.
