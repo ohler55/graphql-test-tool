@@ -1,5 +1,5 @@
 module github.com/ohler55/graphql-test-tool
 
-go 1.15
+go 1.16
 
-require github.com/ohler55/ojg v1.4.1
+require github.com/ohler55/ojg v1.9.2
