@@ -4,6 +4,10 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
+## [1.7.0] - 2021-07-09
+### Added
+- More display options for pretty format and SEN (from OjG) formatting.
+
 ## [1.6.1] - 2021-03-24
 ### Changed
 - Updated go.mod to use the latest OjG.

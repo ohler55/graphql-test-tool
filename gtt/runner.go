@@ -49,6 +49,12 @@ type Runner struct {
 	// and re-marshalled with an indentation.
 	Indent int
 
+	// Pretty formatted output if true. Indent is ignored if true.
+	Pretty bool
+
+	// SEN formatted output if true.
+	SEN bool
+
 	// UseCases to run.
 	UseCases []*UseCase
 

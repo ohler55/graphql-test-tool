@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/ohler55/ojg/oj"
+	"github.com/ohler55/ojg/pretty"
 	"github.com/ohler55/ojg/sen"
 )
 
@@ -310,7 +311,21 @@ func (s *Step) expectJSON(status int, actual []byte, uc *UseCase) (err error) {
 		s.sortResult(result, strings.Split(path, "."), key)
 	}
 	if uc.runner.ShowResponses {
-		uc.runner.Log(aResponse, "%s", oj.JSON(result, uc.runner.Indent))
+		var out string
+		if uc.runner.Pretty {
+			if uc.runner.SEN {
+				out = pretty.SEN(result)
+			} else {
+				out = pretty.JSON(result)
+			}
+		} else {
+			if uc.runner.SEN {
+				out = sen.String(result, uc.runner.Indent)
+			} else {
+				out = oj.JSON(result, uc.runner.Indent)
+			}
+		}
+		uc.runner.Log(aResponse, "%s", out)
 	}
 	for k, path := range s.Remember {
 		s.remember(uc, result, k, strings.Split(path, "."))
