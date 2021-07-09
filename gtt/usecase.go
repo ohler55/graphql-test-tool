@@ -157,6 +157,11 @@ func (uc *UseCase) Run(r *Runner) (err error) {
 	return
 }
 
+// Memory is a map of the variables remembered.
+func (uc *UseCase) Memory() map[string]interface{} {
+	return uc.memory
+}
+
 func (uc *UseCase) replaceVars(s string) string {
 	for k, v := range uc.memory {
 		pat := fmt.Sprintf("$(%s)", k)

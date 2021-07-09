@@ -4,6 +4,10 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
+## [1.7.1] - 2021-07-09
+### Added
+- Add memory access for remembered variables.
+
 ## [1.7.0] - 2021-07-09
 ### Added
 - More display options for pretty format and SEN (from OjG) formatting.
