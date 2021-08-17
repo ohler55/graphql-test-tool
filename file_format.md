@@ -71,8 +71,8 @@ The "steps" array contains Step objects that can include the following fields:
    values from earlier steps. The Remember map describes what to
    remember and what key to store that value in. In the map, the keys
    are the keys for the memory cache while the Remember map values are
-   the path to the value to remember. The path is a simple dot
-   delimited path. It is not a full JSON path (maybe in the future).
+   the path to the value to remember. The path can be a simple dot
+   delimited path or a full JSONPath starting with a @ or $ character.
 
  - **op** is the operation to include in either the URL query or as a
    value for the 'operationName' if using JSON in the Content.

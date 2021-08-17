@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ohler55/ojg/jp"
 	"github.com/ohler55/ojg/oj"
 	"github.com/ohler55/ojg/pretty"
 	"github.com/ohler55/ojg/sen"
@@ -47,8 +48,8 @@ type Step struct {
 	// from earlier steps. The Remember map describes what to remember and
 	// what key to store that value in. In the map, the keys are the keys for
 	// the memory cache while the Remember map values are the path to the
-	// value to remember. The path is a simple dot delimited path. It is not a
-	// full JSON path (maybe in the future).
+	// value to remember. The path can be a simple dot delimited path or a
+	// full JSONPath starting with a @ or $ character.
 	Remember map[string]string
 
 	// Op is the operation to include in either the URL query or as a value
@@ -328,7 +329,18 @@ func (s *Step) expectJSON(status int, actual []byte, uc *UseCase) (err error) {
 		uc.runner.Log(aResponse, "%s", out)
 	}
 	for k, path := range s.Remember {
-		s.remember(uc, result, k, strings.Split(path, "."))
+		if len(path) == 0 {
+			continue
+		}
+		if path[0] == '@' || path[0] == '$' {
+			var x jp.Expr
+			if x, err = jp.ParseString(path); err != err {
+				return
+			}
+			uc.memory[k] = x.First(result)
+		} else {
+			s.remember(uc, result, k, strings.Split(path, "."))
+		}
 	}
 	if s.Expect != nil {
 		if err = s.check(result); err != nil {
