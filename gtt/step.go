@@ -334,7 +334,7 @@ func (s *Step) expectJSON(status int, actual []byte, uc *UseCase) (err error) {
 		}
 		if path[0] == '@' || path[0] == '$' {
 			var x jp.Expr
-			if x, err = jp.ParseString(path); err != err {
+			if x, err = jp.ParseString(path); err != nil {
 				return
 			}
 			uc.memory[k] = x.First(result)

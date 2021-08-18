@@ -4,6 +4,10 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
+## [1.7.3] - 2021-08-18
+### Fixed
+- Fixed incorrect error check.
+
 ## [1.7.2] - 2021-08-17
 ### Added
 - Add support for JSONPath for remembered variables.
