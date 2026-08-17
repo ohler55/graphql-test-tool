@@ -133,9 +133,9 @@ func match(result interface{}, expect interface{}) ([]string, interface{}, inter
 		match := false
 		if 2 < len(x) && x[0] == '/' && x[len(x)-1] == '/' {
 			if rs, ok := result.(string); ok {
-				match, _ = regexp.MatchString(x[1:len(x)-2], rs)
+				match, _ = regexp.MatchString(x[1:len(x)-1], rs)
 			} else {
-				match, _ = regexp.MatchString(x[1:len(x)-2], fmt.Sprintf("%v", result))
+				match, _ = regexp.MatchString(x[1:len(x)-1], fmt.Sprintf("%v", result))
 			}
 		} else if rs, ok := result.(string); ok {
 			match = (rs == x)
