@@ -4,6 +4,12 @@ All changes to the GraphQL Test Tool (gtt) are documented here. Releases follow 
 
 ## [Unreleased]
 
+## [1.7.4] - 2026-08-17
+### Fixed
+- Fixed regex missing the last character.
+### Changed
+- Updated OjG version to the latest, v1.28.4.
+
 ## [1.7.3] - 2021-08-18
 ### Fixed
 - Fixed incorrect error check.
